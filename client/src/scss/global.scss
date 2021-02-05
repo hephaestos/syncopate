@@ -1,0 +1,12 @@
+@import "variables";
+@import "fonts";
+
+body {
+    background-color: $syncopate-dark-blue;
+}
+
+h1 {
+    font-family: $header-font-family;
+    font-size: $header-font-size;
+    color: $syncopate-green;
+}
