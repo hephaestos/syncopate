@@ -12,4 +12,4 @@ Run `yarn start` to start the development server
 You can build the project with
 `yarn build`
 For production build, use
-`yarn build:production`
+`yarn build:prod`
