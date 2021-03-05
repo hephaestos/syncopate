@@ -19,7 +19,7 @@ module.exports = (env,argv) => {
                 {
                     test: /\.module\.s(a|c)ss$/,
                     use: [
-                        isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                        'style-loader',
                         {
                             loader: 'css-loader',
                             options: {
@@ -39,7 +39,7 @@ module.exports = (env,argv) => {
                     test: /\.s(a|c)ss$/,
                     exclude: /\.module.(s(a|c)ss)$/,
                     use: [
-                        isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                        'style-loader',
                         'css-loader',
                         {
                             loader: 'sass-loader',
@@ -58,7 +58,7 @@ module.exports = (env,argv) => {
             filename: "bundle.js"
         },
         devServer: {
-            contentBase: path.join(__dirname, "public/"),
+            contentBase: path.join(__dirname, "src/"),
             port: 3000,
             publicPath: "http://localhost:3000/dist/",
             hotOnly: true
