@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import Logo from "./Logo"
-import "./Navbar.scss"
 class Navbar extends Component {
     render(){
         return(
