@@ -1,8 +1,6 @@
 // Initial backend with example 'Hello World' function from Postman
 
 const express = require('express')
-var parseurl = require('parseurl')
-var session = require('express-session')
 const app = express()
 const port = 4000
 var identifier = 0
