@@ -1,6 +1,14 @@
 @import "variables";
 @import "fonts";
-@import "navbar";
+
+@import "components/app";
+@import "components/controls";
+@import "components/logo";
+@import "components/navbar";
+@import "components/searchbar";
+@import "components/songdisplay";
+@import "components/user";
+@import "components/userbar";
 
 html,body, #root {
     height:100%;

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import "./Controls.scss"
 class Controls extends Component {
     render() {
         return(

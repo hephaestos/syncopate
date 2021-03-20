@@ -1,4 +1,3 @@
-import "./App.scss";
 import User from "./User.js";
 import Userbar from "./Userbar";
 import Navbar from "./Navbar";

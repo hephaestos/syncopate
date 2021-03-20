@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import User from "./User"
-import "./Userbar.scss"
 class UserBar extends Component {
     render() {
         return (
