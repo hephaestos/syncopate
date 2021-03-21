@@ -16,8 +16,28 @@ module.exports = (env,argv) => {
                     options: { presets: ["@babel/env"] }
                 },
                 {
-                    test: /\.css$/,
-                    use: 'css-loader'
+                    test: /\.(gif|png|jpe?g|svg)$/i,
+                    use: [
+                        'file-loader',
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                                mozjpeg: {
+                                    progressive: true,
+                                    quality: 65
+                                },
+                                optipng: {
+                                    enabled: !isDevelopment
+                                },
+                                gifsicle: {
+                                    interlaced: false
+                                },
+                                webp: {
+                                    quality: 75
+                                }
+                            }
+                        }
+                    ]
                 },
                 {
                     test: /\.module\.s(a|c)ss$/,

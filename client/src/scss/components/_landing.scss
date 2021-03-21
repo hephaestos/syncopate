@@ -1,14 +1,8 @@
-body, html {
-  height: 100%
-}
+//TODO add all inline styles from landing_page.html
+//TODO move all styles not specific to landing page to appropriate files
 
-body {
-	background-color: black;
-  font-family: "Roboto Mono", sans-serif
-}
-
-.bg {
-  //background-image: url('/src/images/background.png');
+.Landing {
+  background-image: url('../images/background.png');
   min-height: 100%;
   background-repeat: no-repeat;
   background-position: center;

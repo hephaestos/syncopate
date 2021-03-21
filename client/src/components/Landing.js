@@ -3,7 +3,7 @@ import React, { Component } from "react";
 class Landing extends Component{
     render() {
         return(
-            <div className="bg">
+            <div className="Landing">
                 <div className="row">
                 <div className="col">
                     <div className="header">
