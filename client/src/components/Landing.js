@@ -13,7 +13,7 @@ class Landing extends Component{
                     </div>
                     </div>
                 </div>
-                <div class="col">
+                <div className="col">
                     <div className="header2">
                     <div className="container-header2">
                         <img src="spotify_icon.png" alt="spotify" />

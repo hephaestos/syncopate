@@ -1,21 +1,19 @@
-import User from "./User.js";
-import Userbar from "./Userbar";
-import Navbar from "./Navbar";
-import Searchbar from "./Searchbar";
-import SongDisplay from "./SongDisplay"
-import Controls from "./Controls"
 import React, { Component } from "react";
-import {hot} from "react-hot-loader";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import Session from "./Session";
+import Landing from "./Landing";
 
 class App extends Component{
     render() {
         return(
             <div className="App">
-                <Userbar />
-                <Navbar />
-                <SongDisplay coverArt={"./images/birthofthecool.jpg"} artist={"Miles Davis"} songTitle="Move"/>
-                <Controls />
-                <Searchbar />
+                <BrowserRouter>
+                    <Switch>
+                        <Route exact path='/' component={Landing} />
+                        <Route path='/session' component={Session} />
+                    </Switch>
+                </BrowserRouter>
             </div>
         );
     }
