@@ -13,21 +13,3 @@
 @import "components/user";
 @import "components/userbar";
 @import "components/session";
-
-html,body, #root {
-    height:100%;
-}
-html, body {
-    margin:0;
-}
-body {
-    background-image: linear-gradient($syncopate-dark-blue, $syncopate-blue);
-}
-
-* {
-    font-family: $header-font-family;
-}
-h1 {
-    font-size: $header-font-size;
-    color: $syncopate-green;
-}
