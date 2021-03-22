@@ -1,10 +1,16 @@
 .UserBar {
-    width:4em;
+    width:4%;
+    min-width: 4rem;
     height:100%;
     background-color: $syncopate-blue;
     text-align: center;
     display:inline-block;
 
+    &__title {
+        margin: 0;
+        font-size:1rem;
+        color:white;
+    }
 }
 
 hr {
@@ -12,7 +18,4 @@ hr {
     background-color:$syncopate-yellow;
     border:none;
     opacity: 50%;
-}
-h3 {
-    margin: 0;
 }
