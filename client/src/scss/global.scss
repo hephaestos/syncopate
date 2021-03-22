@@ -1,6 +1,17 @@
+@import "~bootstrap/scss/bootstrap.scss";
+
 @import "variables";
 @import "fonts";
-@import "navbar";
+
+@import "components/app";
+@import "components/controls";
+@import "components/landing";
+@import "components/logo";
+@import "components/navbar";
+@import "components/searchbar";
+@import "components/songdisplay";
+@import "components/user";
+@import "components/userbar";
 
 html,body, #root {
     height:100%;
@@ -19,4 +30,3 @@ h1 {
     font-size: $header-font-size;
     color: $syncopate-green;
 }
-

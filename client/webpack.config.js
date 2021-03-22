@@ -3,7 +3,6 @@ const webpack = require("webpack");
 
 module.exports = (env,argv) => {
     const isDevelopment = argv.mode !== 'production';
-    const MiniCssExtractPlugin = require('mini-css-extract-plugin');
     
     return {
         entry: "./src/index.js",
@@ -15,6 +14,30 @@ module.exports = (env,argv) => {
                     exclude: /(node_modules|bower_components)/,
                     loader: "babel-loader",
                     options: { presets: ["@babel/env"] }
+                },
+                {
+                    test: /\.(gif|png|jpe?g|svg)$/i,
+                    use: [
+                        'file-loader',
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                                mozjpeg: {
+                                    progressive: true,
+                                    quality: 65
+                                },
+                                optipng: {
+                                    enabled: !isDevelopment
+                                },
+                                gifsicle: {
+                                    interlaced: false
+                                },
+                                webp: {
+                                    quality: 75
+                                }
+                            }
+                        }
+                    ]
                 },
                 {
                     test: /\.module\.s(a|c)ss$/,
@@ -58,6 +81,7 @@ module.exports = (env,argv) => {
             filename: "bundle.js"
         },
         devServer: {
+            historyApiFallback: true,
             contentBase: path.join(__dirname, "src/"),
             port: 3000,
             publicPath: "http://localhost:3000/dist/",
@@ -65,10 +89,6 @@ module.exports = (env,argv) => {
         },
         plugins: [
             new webpack.HotModuleReplacementPlugin(),
-            new MiniCssExtractPlugin({
-                filename: isDevelopment ? '[name].css' : '[name].[hash].css',
-                chunkFilename: isDevelopment ? '[id].css' : '[id].[hash].css'
-            })
         ]
     }
 }

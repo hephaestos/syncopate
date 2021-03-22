@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import "./SongDisplay.scss";
 class SongDisplay extends Component {
     render(){
         return(
