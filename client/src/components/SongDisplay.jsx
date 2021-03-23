@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
-class SongDisplay extends Component {
-    render(){
-        return(
-            <div className="SongDisplay">
-                <img id="albumArt" src={this.props.coverArt}/>
-                <p id="songName">{this.props.songTitle}</p>
-                <p id="artist">{this.props.artist}</p>
-            </div>
-        )
-    }
+import React from 'react';
+
+function SongDisplay({ coverArt, songTitle, artist }) {
+    return (
+        <div className="SongDisplay">
+            <img id="albumArt" alt="Album Art" src={coverArt} />
+            <p id="songName">{songTitle}</p>
+            <p id="artist">{artist}</p>
+        </div>
+    );
 }
+
 export default SongDisplay;

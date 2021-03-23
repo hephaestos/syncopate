@@ -1,13 +1,12 @@
-import React, { Component } from 'react'
-class User extends Component {
-render(){
-    return(
+import React from 'react';
+
+function User({ username, profPic }) {
+    return (
         <div className="User">
-            <img id="profPic"src = {this.props.profPic}/>
-            <p id="username">{this.props.username}</p>
+            <img id="profPic" alt="User Profile" src={profPic} />
+            <p id="username">{username}</p>
         </div>
-    )     
-}
+    );
 }
 
 export default User;
