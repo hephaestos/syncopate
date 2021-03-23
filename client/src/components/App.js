@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import {hot} from "react-hot-loader";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import Session from "./Session";
+import Landing from "./Landing";
 
 class App extends Component{
     render() {
         return(
-            <div classname="App">
-                <h1> Syncopate </h1>
+            <div className="App">
+                <BrowserRouter>
+                    <Switch>
+                        <Route exact path='/' component={Landing} />
+                        <Route path='/session' component={Session} />
+                    </Switch>
+                </BrowserRouter>
             </div>
         );
     }

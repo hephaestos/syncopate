@@ -3,7 +3,6 @@ const webpack = require("webpack");
 
 module.exports = (env,argv) => {
     const isDevelopment = argv.mode !== 'production';
-    const MiniCssExtractPlugin = require('mini-css-extract-plugin');
     
     return {
         entry: "./src/index.js",
@@ -17,9 +16,33 @@ module.exports = (env,argv) => {
                     options: { presets: ["@babel/env"] }
                 },
                 {
+                    test: /\.(gif|png|jpe?g|svg)$/i,
+                    use: [
+                        'file-loader',
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                                mozjpeg: {
+                                    progressive: true,
+                                    quality: 65
+                                },
+                                optipng: {
+                                    enabled: !isDevelopment
+                                },
+                                gifsicle: {
+                                    interlaced: false
+                                },
+                                webp: {
+                                    quality: 75
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
                     test: /\.module\.s(a|c)ss$/,
                     use: [
-                        isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                        'style-loader',
                         {
                             loader: 'css-loader',
                             options: {
@@ -39,7 +62,7 @@ module.exports = (env,argv) => {
                     test: /\.s(a|c)ss$/,
                     exclude: /\.module.(s(a|c)ss)$/,
                     use: [
-                        isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                        'style-loader',
                         'css-loader',
                         {
                             loader: 'sass-loader',
@@ -58,17 +81,14 @@ module.exports = (env,argv) => {
             filename: "bundle.js"
         },
         devServer: {
-            contentBase: path.join(__dirname, "public/"),
+            historyApiFallback: true,
+            contentBase: path.join(__dirname, "src/"),
             port: 3000,
             publicPath: "http://localhost:3000/dist/",
             hotOnly: true
         },
         plugins: [
             new webpack.HotModuleReplacementPlugin(),
-            new MiniCssExtractPlugin({
-                filename: isDevelopment ? '[name].css' : '[name].[hash].css',
-                chunkFilename: isDevelopment ? '[id].css' : '[id].[hash].css'
-            })
         ]
     }
 }
