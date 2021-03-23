@@ -4,14 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node syncserver.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
-  },
-  "scripts": {
-    "start": "node syncserver.js"
+    "express": "^4.17.1",
+    "express-session": "^1.17.1"
   }
 }
