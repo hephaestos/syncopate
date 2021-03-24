@@ -28,12 +28,13 @@ app.get(createPath, (req, res) => {
 });
 
 /**
-* GET request to join an existing session. Searches through current sessions to see if given SID matches 
+* GET request to join an existing session. 
+* Searches through current sessions to see if given SID matches 
 * If session exists, sends back positive response to client
 */
 app.get(joinPath, (req, res) => {
-    Object.keys(currSessions).forEach(function(key) {
-        if(currSessions[key] == req.params.sid) {
+    Object.keys(currSessions).forEach((key) => {
+        if (currSessions[key] === req.params.sid) {
             res.send('This session exists!');
         }
     });
@@ -44,6 +45,6 @@ app.get(joinPath, (req, res) => {
 * Temporary express server location to debug/test backend. Currently server starts on localhost:4000
 */
 app.listen(port, () => {
+    // eslint-disable-next-line no-console
     console.log(`Example app listening at http://localhost:${port}`);
 });
-
