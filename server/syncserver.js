@@ -3,10 +3,24 @@
  * Sessions will be implemented using express sessions / mongoDB for storing data
  */
 const express = require('express') //Import expressJS
+const session = require('express-session')
+const hashes = require('jshashes')
+const MongoStore = require('connect-mongo')
 const app = express()
 const port = 4000 //Debugging port
 var identifier = 0 //Counter to create 'unique' IDs
 let currSessions = {} //Temp storage for sessions UIDs and SIDs
+
+app.use(session({
+  genid: function(req) {
+    let uid = req.params.uid.toString
+    let SHA1 = new hashes.SHA1.b64(uid)
+    return SHA1
+  },
+  name: 'syncopate.sid',
+  secret: 'hc489ser3fghKL4c',
+  store: MongoStore.create()
+})
 
 
 /**
