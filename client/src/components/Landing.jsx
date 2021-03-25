@@ -7,7 +7,7 @@ function Landing() {
                 <div className="col">
                     <div className="header">
                         <div className="container-header">
-                            <img src='..\images\logo.png' alt="logo" />
+                            <img src="..\images\logo.png" alt="logo" />
                             <h1>Syncopate</h1>
                         </div>
                     </div>
@@ -15,7 +15,7 @@ function Landing() {
                 <div className="col">
                     <div className="header2">
                         <div className="container-header2">
-                            <img src='..\images\spotify_icon.png' alt="spotify" />
+                            <img src="..\images\spotify_icon.png" alt="spotify" />
                             <h1>User:</h1>
                             <h2>test_user</h2>
                         </div>
