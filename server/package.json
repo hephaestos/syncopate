@@ -11,7 +11,8 @@
   "dependencies": {
     "connect-mongo": "^4.4.1",
     "express": "^4.17.1",
-    "express-session": "^1.17.1"
+    "express-session": "^1.17.1",
+    "jshashes": "^1.0.8"
   },
   "devDependencies": {
     "eslint": "^7.22.0",

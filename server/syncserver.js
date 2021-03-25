@@ -1,27 +1,29 @@
+/* eslint-disable new-cap */
 /**
- * Backend is currently setup with pseduo get and create session HTTP protocols. 
- * Sessions will be implemented using express sessions / mongoDB for storing data
- */
-const express = require('express') //Import expressJS
-const session = require('express-session')
-const hashes = require('jshashes')
-const MongoStore = require('connect-mongo')
-const app = express()
-const port = 4000 //Debugging port
-var identifier = 0 //Counter to create 'unique' IDs
-let currSessions = {} //Temp storage for sessions UIDs and SIDs
+* Backend is currently setup with pseduo get and create session HTTP protocols.
+* Sessions will be implemented using express sessions / mongoDB for storing data
+*/
+const express = require('express'); // Import expressJS
+const session = require('express-session');
+const hashes = require('jshashes');
+
+const MongoStore = require('connect-mongo');
+
+const app = express();
+const port = 4000; // Debugging port
+let identifier = 0; // Counter to create 'unique' IDs
+const currSessions = {}; // Temp storage for sessions UIDs and SIDs
 
 app.use(session({
-  genid: function(req) {
-    let uid = req.params.uid.toString
-    let SHA1 = new hashes.SHA1.b64(uid)
-    return SHA1
-  },
-  name: 'syncopate.sid',
-  secret: 'hc489ser3fghKL4c',
-  store: MongoStore.create()
-})
-
+    genid(req) {
+        const uid = req.params.uid.toString;
+        const SHA1 = new hashes.SHA1.b64(uid);
+        return SHA1;
+    },
+    name: 'syncopate.sid',
+    secret: 'hc489ser3fghKL4c',
+    store: MongoStore.create(),
+}));
 
 /**
 * Path constants
@@ -42,8 +44,8 @@ app.get(createPath, (req, res) => {
 });
 
 /**
-* GET request to join an existing session. 
-* Searches through current sessions to see if given SID matches 
+* GET request to join an existing session.
+* Searches through current sessions to see if given SID matches
 * If session exists, sends back positive response to client
 */
 app.get(joinPath, (req, res) => {
