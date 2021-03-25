@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
     const isDevelopment = argv.mode !== 'production';
@@ -18,10 +19,6 @@ module.exports = (env, argv) => {
                         },
                         'eslint-loader',
                     ],
-                },
-                {
-                    test: /\.html$/,
-                    loader: 'html-loader',
                 },
                 {
                     test: /\.(gif|png|jpe?g|svg)$/i,
@@ -88,6 +85,13 @@ module.exports = (env, argv) => {
             publicPath: '/dist/',
             filename: 'bundle.js',
         },
+        plugins: [
+            new HtmlWebpackPlugin({
+                template: path.join(__dirname, 'src/index.html'),
+                filename: 'index.html',
+                inject: 'body',
+            }),
+        ],
         devServer: {
             historyApiFallback: true,
             contentBase: path.join(__dirname, 'src/'),
