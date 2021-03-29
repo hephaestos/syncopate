@@ -12,12 +12,14 @@
     "connect-mongo": "^4.4.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "jshashes": "^1.0.8"
+    "jshashes": "^1.0.8",
+    "save": "^2.4.0"
   },
   "devDependencies": {
     "eslint": "^7.22.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "jsdoc": "^3.6.6"
+    "jsdoc": "^3.6.6",
+    "swagger-jsdoc": "^7.0.0-rc.6"
   }
 }
