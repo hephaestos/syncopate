@@ -1,19 +1,24 @@
-const path = require("path");
-const webpack = require("webpack");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = (env,argv) => {
+module.exports = (env, argv) => {
     const isDevelopment = argv.mode !== 'production';
-    
+
     return {
-        entry: "./src/index.js",
-        mode: "development",
+        entry: './src/index.jsx',
+        mode: 'development',
         module: {
             rules: [
                 {
                     test: /\.(js|jsx)$/,
-                    exclude: /(node_modules|bower_components)/,
-                    loader: "babel-loader",
-                    options: { presets: ["@babel/env"] }
+                    exclude: /(node_modules|bower_components|dist)/,
+                    use: [
+                        {
+                            loader: 'babel-loader',
+                            options: { presets: ['@babel/env'] },
+                        },
+                        'eslint-loader',
+                    ],
                 },
                 {
                     test: /\.(gif|png|jpe?g|svg)$/i,
@@ -24,20 +29,20 @@ module.exports = (env,argv) => {
                             options: {
                                 mozjpeg: {
                                     progressive: true,
-                                    quality: 65
+                                    quality: 65,
                                 },
                                 optipng: {
-                                    enabled: !isDevelopment
+                                    enabled: !isDevelopment,
                                 },
                                 gifsicle: {
-                                    interlaced: false
+                                    interlaced: false,
                                 },
                                 webp: {
-                                    quality: 75
-                                }
-                            }
-                        }
-                    ]
+                                    quality: 75,
+                                },
+                            },
+                        },
+                    ],
                 },
                 {
                     test: /\.module\.s(a|c)ss$/,
@@ -47,16 +52,16 @@ module.exports = (env,argv) => {
                             loader: 'css-loader',
                             options: {
                                 modules: true,
-                                sourceMap: isDevelopment
-                            }
+                                sourceMap: isDevelopment,
+                            },
                         },
                         {
                             loader: 'sass-loader',
                             options: {
-                                sourceMap: isDevelopment
-                            }
-                        }
-                    ]
+                                sourceMap: isDevelopment,
+                            },
+                        },
+                    ],
                 },
                 {
                     test: /\.s(a|c)ss$/,
@@ -67,28 +72,31 @@ module.exports = (env,argv) => {
                         {
                             loader: 'sass-loader',
                             options: {
-                                sourceMap: isDevelopment
-                            }
-                        }
-                    ]
-                }
-            ]
+                                sourceMap: isDevelopment,
+                            },
+                        },
+                    ],
+                },
+            ],
         },
-        resolve: { extensions: ["*", ".js", ".jsx", ".scss"] },
+        resolve: { extensions: ['*', '.js', '.jsx', '.scss'] },
         output: {
-            path: path.resolve(__dirname, "dist/"),
-            publicPath: "/dist/",
-            filename: "bundle.js"
-        },
-        devServer: {
-            historyApiFallback: true,
-            contentBase: path.join(__dirname, "src/"),
-            port: 3000,
-            publicPath: "http://localhost:3000/dist/",
-            hotOnly: true
+            path: path.resolve(__dirname, 'dist/'),
+            publicPath: '/dist/',
+            filename: 'bundle.js',
         },
         plugins: [
-            new webpack.HotModuleReplacementPlugin(),
-        ]
-    }
-}
+            new HtmlWebpackPlugin({
+                template: path.join(__dirname, 'src/index.html'),
+                filename: 'index.html',
+                inject: 'body',
+            }),
+        ],
+        devServer: {
+            historyApiFallback: true,
+            contentBase: path.join(__dirname, 'src/'),
+            port: 3000,
+            publicPath: 'http://localhost:3000/dist/',
+        },
+    };
+};
