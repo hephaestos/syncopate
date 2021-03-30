@@ -1,5 +1,12 @@
 import React from 'react';
 
+/**
+ * @component Landing
+ * @summary The landing page when users first come to the site
+ * @description This landing page provides the ability to log in to your spotify account,
+ * and then create or join a session
+ * @returns The Landing component
+ */
 function Landing() {
     return (
         <div className="Landing">
