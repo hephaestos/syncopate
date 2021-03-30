@@ -3,9 +3,24 @@
 * Backend is currently setup with pseduo get and create session HTTP protocols.
 * Sessions will be implemented using express sessions / mongoDB for storing data
 */
+// const swaggerJSDoc = require('swagger-jsdoc');
+// const swaggerUI = require('swagger-ui-express');
+
+// const options = {
+//     definition: {
+//         openapi: '3.0.0',
+//         info: {
+//             title: 'Syncopate API',
+//             version: '1.0.0',
+//         },
+//     },
+//     apis: ['./syncserver.js'],
+// };
+
+// const openapiSpecification = swaggerJSDoc(options);
 const express = require('express'); // Import expressJS
 const session = require('express-session');
-const hashes = require('jshashes');
+// const hashes = require('jshashes');
 
 const MongoStore = require('connect-mongo');
 
@@ -15,15 +30,22 @@ let identifier = 0; // Counter to create 'unique' IDs
 const currSessions = {}; // Temp storage for sessions UIDs and SIDs
 
 app.use(session({
-    genid(req) {
-        const uid = req.params.uid.toString;
-        const SHA1 = new hashes.SHA1.b64(uid);
-        return SHA1;
-    },
+    // genid(req) {
+    //     const uid = req.params.uid.toString;
+    //     const SHA1 = new hashes.SHA1.b64(uid);
+    //     return SHA1;
+    // },
     name: 'syncopate.sid',
     secret: 'hc489ser3fghKL4c',
-    store: MongoStore.create(),
+    store: new MongoStore({
+        mongoUrl: 'mongodb+srv://thombran:Syncopate@cluster0.vec2a.mongodb.net/Syncopate?retryWrites=true&w=majority',
+        dbName: 'Syncopate',
+        collectionName: 'sessions',
+        autoRemove: 'native',
+    }),
 }));
+
+// app.use('/API', swaggerUI.serve, swaggerUI.setup(openapiSpecification));
 
 /**
 * Path constants
@@ -36,10 +58,14 @@ const joinPath = '/join-session/:sid'; // Joining session path
 * using uid given by request parameters
 * Returns response indicating the unique session ID
 */
-app.get(createPath, (req, res) => {
+app.post(createPath, (req, res) => {
     if (currSessions[`${req.params.uid}`] == null) {
         currSessions[`${req.params.uid}`] = `${req.params.uid + identifier++}`;
     }
+    req.session.sess = {
+        name: `${req.params.uid}`,
+        password: 'finnigan',
+    };
     res.send(`You just created a session with unique ID: ${currSessions[req.params.uid]}`);
 });
 
@@ -49,12 +75,14 @@ app.get(createPath, (req, res) => {
 * If session exists, sends back positive response to client
 */
 app.get(joinPath, (req, res) => {
-    Object.keys(currSessions).forEach((key) => {
-        if (currSessions[key] === req.params.sid) {
-            res.send('This session exists!');
-        }
-    });
-    // res.send('This session does not exist!')
+    // Object.keys(currSessions).forEach((key) => {
+    //     if (currSessions[key] === req.params.sid) {
+    //         res.send('This session exists!');
+    //     }
+    // });
+    // // res.send('This session does not exist!')
+
+    res.send(req.session.sess);
 });
 
 /**
