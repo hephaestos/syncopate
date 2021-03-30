@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * @component SongDisplay
+ * @summary Displays the album art, title, and artist of the current song
+ * @returns The SongDisplay component
+ */
 function SongDisplay({ coverArt, songTitle, artist }) {
     return (
         <div className="SongDisplay">
