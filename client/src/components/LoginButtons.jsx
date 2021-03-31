@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import React from 'react';
+import { Link } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import spotifyService from '../spotifyService';
 import SpotifyAuth from './SpotifyAuth';
@@ -29,7 +30,7 @@ function LoginButtons() {
         <div className="LoginButtons">
             <SpotifyAuth />
             <button type="button" className="btn btn-outline-success btn-lg">Create Session</button>
-            <button type="button" className="btn btn-outline-success btn-lg">Join Session</button>
+            <Link to="/session"><button type="button" className="btn btn-outline-success btn-lg">Join Session</button></Link>
         </div>
     );
 }
