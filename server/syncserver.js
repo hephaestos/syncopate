@@ -32,7 +32,7 @@ const app = express();
 const port = 4000; // Debugging port, will be hosted on private server in future
 
 /**
- * @summary Setup the Express Session client for the user, initialize cookie, and 
+ * @summary Setup the Express Session client for the user, initialize cookie, and
  * connect to MongoDB backend. Initializes various settings for express sessions and store
  */
 app.use(session({
