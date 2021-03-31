@@ -11,6 +11,7 @@ import pkg from 'swagger-ui-express'; // Will be used to generate nice HTML/CSS 
 import express from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
+import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
 import { sessionSecret, URL } from './secrets.js'; // Holds private backend information not to be displayed on GitHub
 
@@ -31,6 +32,10 @@ const openapiSpecification = swaggerJSDoc(options);
 const app = express();
 const port = 4000; // Debugging port, will be hosted on private server in future
 
+mongoose.connect(URL);
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
+
 /**
  * @summary Setup the Express Session client for the user, initialize cookie, and
  * connect to MongoDB backend. Initializes various settings for express sessions and store
@@ -49,6 +54,7 @@ app.use(session({
         dbName: 'Syncopate',
         collectionName: 'sessions',
         autoRemove: 'native', // Default value for auto remove
+        mongooseConnection: db,
     }),
 }));
 
@@ -67,12 +73,19 @@ const createPath = '/create-session';
  * @requires createPath The route for this POST request
  * @todo Implement session name checking to avoid duplicates
  */
-app.post(createPath, (req, res) => {
-    req.session.UserSession = {
-        session_name: req.body.session_name,
-        session_password: req.body.password,
-    };
-    res.send(`You just created a session with name: ${req.body.session_name}`);
+app.post(createPath, async (req, res) => {
+    // eslint-disable-next-line no-useless-concat
+    const query = { session: { $regex: '.*' + `${req.body.session_name}` } };
+    const name = await db.collection('sessions').findOne(query);
+    if (name == null) {
+        req.session.UserSession = {
+            session_name: req.body.session_name,
+            session_password: req.body.password,
+        };
+        res.send('Session created');
+    } else {
+        res.send('Name already being used!');
+    }
 });
 
 /**
