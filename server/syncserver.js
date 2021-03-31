@@ -6,9 +6,10 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import pkg from 'swagger-ui-express';
 import express from 'express';
 import session from 'express-session';
-import { sessionSecret, URL } from './secrets';
-
 import MongoStore from 'connect-mongo';
+// eslint-disable-next-line import/extensions
+import bodyParser from 'body-parser';
+import { sessionSecret, URL } from './secrets.js';
 
 const { serve, setup } = pkg;
 
@@ -24,11 +25,8 @@ const options = {
 };
 
 const openapiSpecification = swaggerJSDoc(options);
-
 const app = express();
 const port = 4000; // Debugging port
-let identifier = 0; // Counter to create 'unique' IDs
-const currSessions = {}; // Temp storage for sessions UIDs and SIDs
 
 app.use(session({
     name: 'syncopate.sid',
@@ -47,12 +45,13 @@ app.use(session({
     }),
 }));
 
+app.use(express.json());
 app.use('/API', serve, setup(openapiSpecification));
 
 /**
 * Path constants
 */
-const createPath = '/create-session/:uid'; // Creating session path
+const createPath = '/create-session'; // Creating session path
 
 /**
 * GET request (I think it should be POST) to create the new session
@@ -60,14 +59,11 @@ const createPath = '/create-session/:uid'; // Creating session path
 * Returns response indicating the unique session ID
 */
 app.post(createPath, (req, res) => {
-    if (currSessions[`${req.params.uid}`] == null) {
-        currSessions[`${req.params.uid}`] = `${req.params.uid + identifier++}`;
-    }
-    req.session.sess = {
-        name: `${req.params.uid}`,
-        password: `${identifier}`,
+    req.session.UserSession = {
+        session_name: req.body.session_name,
+        session_password: req.body.password,
     };
-    res.send(`You just created a session with unique ID: ${currSessions[req.params.uid]}`);
+    res.send(`You just created a session with name: ${req.body.session_name}`);
 });
 
 /**
