@@ -2,7 +2,8 @@ import React from 'react';
 
 /**
  * @component User
- * @param { username, profilePic} props the username and profile image are passed as props
+ * @param username The name to display for the user
+ * @param profilePic The profile picture of the user
  * @example <User username="Lionel Richie" profilePic="../image/allnight.jpg" />
  * @returns The User component
  */

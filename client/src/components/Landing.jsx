@@ -1,4 +1,5 @@
 import React from 'react';
+import LoginButtons from './LoginButtons';
 
 /**
  * @component Landing
@@ -35,8 +36,7 @@ function Landing() {
                     Click &quot;Create Session&quot; to log in through Spotify or
                     &quot;Join Session&quot; to join an existing room...
                 </p>
-                <button type="button" className="btn btn-outline-success btn-lg">Create Session</button>
-                <button type="button" className="btn btn-outline-success btn-lg">Join Session</button>
+                <LoginButtons />
             </div>
         </div>
     );

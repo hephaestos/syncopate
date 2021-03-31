@@ -1,15 +1,20 @@
-class SpotifyService {
-    constructor() {
-        this.authEndpoint = 'https://accounts.spotify.com/authorize';
-        this.clientId = 'f91290ac20d049f683b9dc9c7785fa21';
-        this.redirectUri = 'http://localhost:3000';
-        this.scopes = [
-            'streaming',
-            'user-read-email',
-            'user-read-private',
-        ];
-    }
+const authEndpoint = 'https://accounts.spotify.com/authorize';
+const clientId = 'f91290ac20d049f683b9dc9c7785fa21';
+const redirectUri = 'http://localhost:3000';
+const scopes = [
+    'streaming',
+    'user-read-email',
+    'user-read-private',
+];
+let token;
+let isAuth = false;
 
+export default {
+    authEndpoint,
+    clientId,
+    redirectUri,
+    scopes,
+    isAuth,
     authorize() {
         const hash = window.location.hash
             .substring(1)
@@ -25,8 +30,8 @@ class SpotifyService {
 
         window.location.hash = '';
 
-        this.token = hash.access_token;
-    }
-}
-
-export default SpotifyService;
+        // eslint-disable-next-line no-unused-vars
+        token = hash.access_token;
+        isAuth = true;
+    },
+};
