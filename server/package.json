@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node syncserver.js"
+    "start": "node syncserver.js",
+    "docs": "jsdoc -d docs syncserver.js"
   },
   "author": "",
   "license": "ISC",

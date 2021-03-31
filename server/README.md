@@ -6,7 +6,9 @@ To get started just install the node packages with
 
 ## Development Server
 Hosted on [localhost:4000](localhost:4000)
-Run `npm start` to start the development server
+Run `npm run start` to start the development server
 
-
-# TODO --> Create documentation for JSON format and other server calls
+## Documentation
+You can generate docs from the comments with
+`npm run docs`
+This will generate a site in /docs with the availble documentation
