@@ -14,24 +14,34 @@ export default {
     clientId,
     redirectUri,
     scopes,
-    isAuth,
+    isAuth() {
+        return isAuth;
+    },
     authorize() {
-        const hash = window.location.hash
-            .substring(1)
-            .split('&')
-            .reduce((initial, item) => {
-                const out = initial;
-                if (item) {
-                    const parts = item.split('=');
-                    out[parts[0]] = decodeURIComponent(parts[1]);
+        if (!token) {
+            token = localStorage.getItem('spotify_token');
+
+            if (!token) {
+                const hash = window.location.hash
+                    .substring(1)
+                    .split('&')
+                    .reduce((initial, item) => {
+                        const out = initial;
+                        if (item) {
+                            const parts = item.split('=');
+                            out[parts[0]] = decodeURIComponent(parts[1]);
+                        }
+                        return out;
+                    }, {});
+
+                window.location.hash = '';
+                token = hash.access_token;
+                if (token) {
+                    localStorage.setItem('spotify_token', token);
                 }
-                return out;
-            }, {});
+            }
 
-        window.location.hash = '';
-
-        // eslint-disable-next-line no-unused-vars
-        token = hash.access_token;
-        isAuth = true;
+            isAuth = !!token;
+        }
     },
 };
