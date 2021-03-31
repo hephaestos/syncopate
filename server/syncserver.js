@@ -1,6 +1,6 @@
 /**
  * @author Brandon T, Taylor R., Remy M., Jacob J., Daniel F.
- * @version 1.0.0
+ * @version 0.0.1
  * @description This is the API for the Syncopate client which handles user requests to either
  * create, join, or destroy music listening sessions. The API stores user session data within a
  * MongoDB cluster. The POST method ensures user is creating unique session name, and GET method
@@ -65,6 +65,7 @@ const createPath = '/create-session';
  * @returns Success response if session was successfully created
  * @callback (req,res) Used to parse incoming req data and send success/fail responses
  * @requires createPath The route for this POST request
+ * @todo Implement session name checking to avoid duplicates
  */
 app.post(createPath, (req, res) => {
     req.session.UserSession = {
