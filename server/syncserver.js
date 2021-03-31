@@ -1,21 +1,24 @@
 /**
-* Backend is currently setup with pseduo get and create session HTTP protocols.
-* Sessions will be implemented using express sessions / mongoDB for storing data
-*/
-import swaggerJSDoc from 'swagger-jsdoc';
-import pkg from 'swagger-ui-express';
-import express from 'express';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
+ * @author Brandon T, Taylor R., Remy M., Jacob J., Daniel F.
+ * @version 1.0.0
+ * @description This is the API for the Syncopate client which handles user requests to either
+ * create, join, or destroy music listening sessions. The API stores user session data within a
+ * MongoDB cluster. The POST method ensures user is creating unique session name, and GET method
+ * to join a session ensures session already exists and user has provided valid password.
+ */
+import swaggerJSDoc from 'swagger-jsdoc'; // Will be used for creating API specific documentation in the future
+import pkg from 'swagger-ui-express'; // Will be used to generate nice HTML/CSS pages for documentation in future
+import express from 'express'; // Express API library
+import session from 'express-session'; // Used to store and manage user sessions
+import MongoStore from 'connect-mongo'; // Database for backend storage of user data
 // eslint-disable-next-line import/extensions
-import bodyParser from 'body-parser';
-import { sessionSecret, URL } from './secrets.js';
+import { sessionSecret, URL } from './secrets.js'; // Holds private backend information not to be displayed on GitHub
 
 const { serve, setup } = pkg;
 
 const options = {
     definition: {
-        openapi: '3.0.0',
+        openapi: '3.0.0', // Future documentation will use OpenAPI specification 3.0.0
         info: {
             title: 'Syncopate API',
             version: '1.0.0',
@@ -26,38 +29,43 @@ const options = {
 
 const openapiSpecification = swaggerJSDoc(options);
 const app = express();
-const port = 4000; // Debugging port
+const port = 4000; // Debugging port, will be hosted on private server in future
 
+/**
+ * @summary Setup the Express Session client for the user, initialize cookie, and 
+ * connect to MongoDB backend. Initializes various settings for express sessions and store
+ */
 app.use(session({
     name: 'syncopate.sid',
     secret: sessionSecret,
-    resave: true,
-    saveUninitialized: true,
+    resave: true, // Forces session to be saved to store, even if not modified during req
+    saveUninitialized: true, // Uninitialized sessions still saved to store
     cookie: {
-        maxAge: 24 * 60 * 60 * 1000,
-        secure: false,
+        maxAge: 24 * 60 * 60 * 1000, // Max length user session will be remebered is 24H
+        secure: false, // Not to be sent over HTTPS, currently
     },
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
         collectionName: 'sessions',
-        autoRemove: 'native',
+        autoRemove: 'native', // Default value for auto remove
     }),
 }));
 
-app.use(express.json());
-app.use('/API', serve, setup(openapiSpecification));
+app.use(express.json()); // Allows for parsing of JSON data in request body
+app.use('/API', serve, setup(openapiSpecification)); // Route to display API documentation, in the future
+
+// Path constants
+const createPath = '/create-session';
 
 /**
-* Path constants
-*/
-const createPath = '/create-session'; // Creating session path
-
-/**
-* GET request (I think it should be POST) to create the new session
-* using uid given by request parameters
-* Returns response indicating the unique session ID
-*/
+ * @summary This POST method is used to create a new user session on the MongoDB backend using a
+ * user provided session name and password for the session. *In future* will verify session name
+ * is unique
+ * @returns Success response if session was successfully created
+ * @callback (req,res) Used to parse incoming req data and send success/fail responses
+ * @requires createPath The route for this POST request
+ */
 app.post(createPath, (req, res) => {
     req.session.UserSession = {
         session_name: req.body.session_name,
@@ -67,8 +75,9 @@ app.post(createPath, (req, res) => {
 });
 
 /**
-* Temporary express server location to debug/test backend. Currently server starts on localhost:4000
-*/
+ * @requires port The default port to connect to. Temporarily set to 4000
+ * @returns Logs to console upon successful connection to server. Temporarily localhost
+ */
 app.listen(port, () => {
     // eslint-disable-next-line no-console
     console.log(`Example app listening at http://localhost:${port}`);
