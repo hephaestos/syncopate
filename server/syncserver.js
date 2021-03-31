@@ -6,6 +6,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import pkg from 'swagger-ui-express';
 import express from 'express';
 import session from 'express-session';
+import { sessionSecret, URL } from './secrets';
 
 import MongoStore from 'connect-mongo';
 
@@ -31,7 +32,7 @@ const currSessions = {}; // Temp storage for sessions UIDs and SIDs
 
 app.use(session({
     name: 'syncopate.sid',
-    secret: 'hc489ser3fghKL4c',
+    secret: sessionSecret,
     resave: true,
     saveUninitialized: true,
     cookie: {
@@ -39,7 +40,7 @@ app.use(session({
         secure: false,
     },
     store: new MongoStore({
-        mongoUrl: 'mongodb+srv://thombran:Syncopate@cluster0.vec2a.mongodb.net/Syncopate?retryWrites=true&w=majority',
+        mongoUrl: URL,
         dbName: 'Syncopate',
         collectionName: 'sessions',
         autoRemove: 'native',
