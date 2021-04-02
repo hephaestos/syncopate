@@ -6,6 +6,7 @@
  * MongoDB cluster. The POST method ensures user is creating unique session name, and GET method
  * to join a session ensures session already exists and user has provided valid password.
  */
+class syncopateAPI {}
 import swaggerJSDoc from 'swagger-jsdoc'; // Will be used for creating API specific documentation in the future
 import pkg from 'swagger-ui-express'; // Will be used to generate nice HTML/CSS pages for documentation in future
 import express from 'express'; // Express API library
@@ -40,6 +41,7 @@ const db = mongoose.connection;
  * @summary Setup the Express Session client for the user, initialize cookie, and
  * connect to MongoDB backend. Initializes various settings for express sessions and store
  */
+function appSession() {}
 app.use(session({
     name: 'syncopate.sid',
     secret: sessionSecret,
@@ -73,6 +75,7 @@ const createPath = '/create-session';
  * @requires createPath The route for this POST request
  * @todo Implement session name checking to avoid duplicates
  */
+function createSession() {}
 app.post(createPath, async (req, res) => {
     // eslint-disable-next-line no-useless-concat
     const query = { session: { $regex: '.*' + `${req.body.session_name}` } };
@@ -92,6 +95,7 @@ app.post(createPath, async (req, res) => {
  * @requires port The default port to connect to. Temporarily set to 4000
  * @returns Logs to console upon successful connection to server. Temporarily localhost
  */
+function listen() {}
 app.listen(port, () => {
     // eslint-disable-next-line no-console
     console.log(`Example app listening at http://localhost:${port}`);
