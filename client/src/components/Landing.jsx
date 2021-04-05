@@ -6,7 +6,7 @@ function Landing() {
             <div className="row">
                 <div className="col">
                     <div className="header">
-                        <div className="container-header">
+                        <div className="container-header-sm">
                             <img src="..\images\logo.png" alt="logo" />
                             <h1>Syncopate</h1>
                         </div>
@@ -14,7 +14,7 @@ function Landing() {
                 </div>
                 <div className="col">
                     <div className="header2">
-                        <div className="container-header2">
+                        <div className="container-header2-sm">
                             <img src="..\images\spotify_icon.png" alt="spotify" />
                             <h1>User:</h1>
                             <h2>test_user</h2>
@@ -22,7 +22,7 @@ function Landing() {
                     </div>
                 </div>
             </div>
-            <div className="container-buttons">
+            <div className="container-buttons-lg">
                 <p className="font-weight-normal">Listen to Spotify together from anywhere in the world.</p>
                 <p className="font-weight-normal">
                     Click &quot;Create Session&quot; to log in through Spotify or

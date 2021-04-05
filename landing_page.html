@@ -3,6 +3,8 @@
 <title>Syncopate - Spotify Together</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel=”stylesheet” href=”css/bootstrap.css”>
+<link rel=”stylesheet” href=”css/bootstrap-responsive.css”>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
@@ -95,18 +97,16 @@ body {
   padding-left: 5px;
 }
 
-.container-header {
+.container-header-lg {
   display: inline-block;
   vertical-align: bottom;
   word-wrap: normal;
-  width: 800px;
 }
 
-.container-header2 {
+.container-header2-lg {
   display: inline-block;
   padding-left: 400px;
   word-wrap: normal;
-  width: 1000px;
 }
 
 .row {
@@ -115,12 +115,11 @@ body {
   height: 54px;
 }
 
-.container-buttons {
+.container-buttons-lg {
   display: inline-block;
   vertical-align: bottom;
   padding-top: 400px;
   padding-left: 175px;
-  width: 800px;
 }
 
 </style>
@@ -128,16 +127,14 @@ body {
 <div class="bg">
     <div class="row">
       <div class="col">
-        <div class="header">
-          <div class="container-header">
+          <div class="container-header-lg">
             <img src="logo.png" alt="logo" />
             <h1 style="color:#d2e603; font-weight: bold;font-size: 30px;">Syncopate</h1>
           </div>
-        </div>
       </div>
       <div class="col">
         <div class="header2">
-          <div class="container-header2">
+          <div class="container-header2-lg">
             <img src="spotify_icon.png" alt="spotify" />
             <h1 style="color:#d2e603; font-weight: bold; font-size: 30px;">User:</h1>
             <h2 style="color:#03e6bd; font-weight: bold; font-size: 25px;">test_user</h2>
@@ -145,7 +142,7 @@ body {
         </div>
       </div>
     </div>
-    <div class="container-buttons">
+    <div class="container-buttons-lg">
       <p class="font-weight-normal">Listen to Spotify together from anywhere in the world.</p>
       <p class="font-weight-normal">Click "Create Session" to log in through Spotify or
         "Join Session" to join an existing room...
