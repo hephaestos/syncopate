@@ -3,18 +3,28 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node syncserver.js"
+    "start": "node syncserver.js",
+    "docs": "jsdoc -d docs syncserver.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "connect-mongo": "^4.4.1",
+    "connect-mongodb-session": "^2.4.1",
     "express": "^4.17.1",
-    "express-session": "^1.17.1"
+    "express-session": "^1.17.1",
+    "jshashes": "^1.0.8",
+    "mongoose": "^5.12.2",
+    "save": "^2.4.0",
+    "swagger-jsdoc": "^7.0.0-rc.6",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "eslint": "^7.22.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "jsdoc": "^3.6.6"
   }
 }
