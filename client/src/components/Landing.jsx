@@ -33,8 +33,8 @@ function Landing() {
             <div className="container-buttons-lg">
                 <p className="font-weight-normal">Listen to Spotify together from anywhere in the world.</p>
                 <p className="font-weight-normal">
-                    Click &quot;Create Session&quot; to log in through Spotify or
-                    &quot;Join Session&quot; to join an existing room...
+                    Click below to log in through Spotify and get started listening
+                    with all of your friends...
                 </p>
                 <LoginButtons />
             </div>
