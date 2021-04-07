@@ -8,7 +8,7 @@
  */
 import swaggerJSDoc from 'swagger-jsdoc'; // Will be used for creating API specific documentation in the future
 import pkg from 'swagger-ui-express'; // Will be used to generate nice HTML/CSS pages for documentation in future
-import express from 'express'; // Express API library
+import express, { json } from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
 import mongoose from 'mongoose';
@@ -41,7 +41,7 @@ const db = mongoose.connection;
  * connect to MongoDB backend. Initializes various settings for express sessions and store
  */
 app.use(session({
-    name: 'syncopate.sid',
+    name: 'Syncopate.sid',
     secret: sessionSecret,
     resave: true, // Forces session to be saved to store, even if not modified during req
     saveUninitialized: true, // Uninitialized sessions still saved to store
@@ -94,7 +94,16 @@ app.get(joinPath, async(req, res) => {
     const name = await db.collection('sessions').findOne(queryUserName);
     if(name != null)
     {
-        //check password 
+        const sessionInfo = db.collection('sessions').findOne(queryUserName, {_id: 0, 'expires': 0, 'session': 0});
+        const docString = JSON.stringify(sessionInfo, null, ' ');
+        const username = JSON.parse(docString);
+        if(req.body.password == username.session_name){
+            //Join the Session
+        }
+        else
+        {
+            res.send('Incorrect Password.');
+        }
     }
     else 
     {
