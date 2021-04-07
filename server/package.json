@@ -16,7 +16,8 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jshashes": "^1.0.8",
-    "mongoose": "^5.12.2",
+    "mongodb": "^3.6.6",
+    "mongoose": "^5.12.3",
     "save": "^2.4.0",
     "swagger-jsdoc": "^7.0.0-rc.6",
     "swagger-ui-express": "^4.1.6"

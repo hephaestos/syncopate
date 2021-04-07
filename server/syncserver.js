@@ -63,6 +63,7 @@ app.use('/API', serve, setup(openapiSpecification)); // Route to display API doc
 
 // Path constants
 const createPath = '/create-session';
+const joinPath = '/join-session';
 
 /**
  * @summary This POST method is used to create a new user session on the MongoDB backend using a
@@ -84,8 +85,22 @@ app.post(createPath, async (req, res) => {
         };
         res.send('Session created');
     } else {
-        res.send('Name already being used!');
+        res.send('Name already being used!');  
     }
+});
+
+app.get(joinPath, async(req, res) => {
+    const queryUserName = { session: { $regex: '.*' + `${req.body.session_name}` } };
+    const name = await db.collection('sessions').findOne(queryUserName);
+    if(name != null)
+    {
+        //check password 
+    }
+    else 
+    {
+        res.send('Session not available.');
+    }
+    
 });
 
 /**
