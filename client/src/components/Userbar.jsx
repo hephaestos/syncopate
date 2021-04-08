@@ -1,6 +1,11 @@
 import React from 'react';
 import User from './User';
 
+/**
+ * @component UserBar
+ * @summary A sidbar displaying all the users in the current session
+ * @returns The Userbar component
+ */
 function UserBar() {
     return (
         <div className="UserBar">
