@@ -76,34 +76,35 @@
 
 .font-weight-normal {
   color: white;
-  padding-top: 5px;
-  padding-left: 5px;
+  text-shadow: -1px 1px 0 #000,
+				  1px 1px 0 #000,
+				 1px -1px 0 #000,
+				-1px -1px 0 #000;
 }
 
-.container-header {
+.container-header-sm {
   display: inline-block;
   vertical-align: bottom;
   word-wrap: normal;
-  width: 800px;
 }
 
-.container-header2 {
+.container-header2-sm {
   display: inline-block;
-  padding-left: 400px;
   word-wrap: normal;
-  width: 1000px;
+  color: #03e6bd;
+  padding-right: 5px;
+  @include float-right;
 }
 
 .row {
   background-color: black;
   opacity: .75;
-  height: 54px;
+  height: fit-content;
 }
 
-.container-buttons {
+.container-buttons-lg {
   display: inline-block;
   vertical-align: bottom;
-  padding-top: 400px;
+  padding-top: 425px;
   padding-left: 175px;
-  width: 800px;
 }
