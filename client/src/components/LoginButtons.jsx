@@ -1,7 +1,5 @@
-/* eslint-disable max-len */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-// eslint-disable-next-line no-unused-vars
 import spotifyService from '../spotifyService';
 import SpotifyAuth from './SpotifyAuth';
 

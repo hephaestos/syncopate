@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const authEndpoint = 'https://accounts.spotify.com/authorize';
 const clientId = 'f91290ac20d049f683b9dc9c7785fa21';
 const redirectUri = 'http://localhost:3000';
@@ -43,5 +45,24 @@ export default {
 
             isAuth = !!token;
         }
+    },
+    getUserData() {
+        if (!isAuth) {
+            return null;
+        }
+
+        const authStr = `Bearer ${token}`;
+        const url = 'https://api.spotify.com/v1/me';
+        axios.get(url, { headers: { Authorization: authStr } })
+            .then((res) => {
+                console.log(res);
+                return res;
+            })
+            .catch((err) => {
+                console.log(err);
+                return err;
+            });
+
+        return null;
     },
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import LoginButtons from './LoginButtons';
+import UserDisplay from './UserDisplay';
 
 /**
  * @component Landing
@@ -21,13 +22,7 @@ function Landing() {
                     </div>
                 </div>
                 <div className="col">
-                    <div className="header2">
-                        <div className="container-header2">
-                            <img src="spotify_icon.png" alt="spotify" />
-                            <h1>User:</h1>
-                            <h2>test_user</h2>
-                        </div>
-                    </div>
+                    <UserDisplay />
                 </div>
             </div>
             <div className="container-buttons">

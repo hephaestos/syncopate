@@ -25,6 +25,7 @@
   "dependencies": {
     "@babel/cli": "^7.12.13",
     "@babel/core": "^7.12.13",
+    "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "file-loader": "^6.2.0",
     "html-loader": "^2.1.2",
