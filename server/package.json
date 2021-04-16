@@ -13,10 +13,13 @@
   "dependencies": {
     "connect-mongo": "^4.4.1",
     "connect-mongodb-session": "^2.4.1",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jshashes": "^1.0.8",
     "mongoose": "^5.12.2",
+    "querystring": "^0.2.1",
     "save": "^2.4.0",
     "swagger-jsdoc": "^7.0.0-rc.6",
     "swagger-ui-express": "^4.1.6"

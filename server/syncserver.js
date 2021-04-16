@@ -12,8 +12,10 @@ import express from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
 import mongoose from 'mongoose';
-// eslint-disable-next-line import/extensions
-import { sessionSecret, URL } from './secrets.js'; // Holds private backend information not to be displayed on GitHub
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import queryString from 'querystring';
+import { sessionSecret, URL, clientId, clientSecret } from './secrets'; // Holds private backend information not to be displayed on GitHub
 
 const { serve, setup } = pkg;
 
@@ -58,8 +60,10 @@ app.use(session({
     }),
 }));
 
-app.use(express.json()); // Allows for parsing of JSON data in request body
-app.use('/API', serve, setup(openapiSpecification)); // Route to display API documentation, in the future
+app.use(express.json()) // Allows for parsing of JSON data in request body
+    .use('/API', serve, setup(openapiSpecification)) // Route to display API documentation, in the future
+    .use(cors())
+    .use(cookieParser());
 
 // Path constants
 const createPath = '/create-session';
@@ -86,6 +90,22 @@ app.post(createPath, async (req, res) => {
     } else {
         res.send('Name already being used!');
     }
+});
+
+app.get('/get-tokens', (req, res) => {
+    const code = req.query.code || null;
+    const authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        form: {
+            code: code,
+            redirect_uri: redirect_uri,
+            grant_type: 'authorization_code',
+        },
+        headers: {
+            Authorization: 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+        },
+        json: true,
+    };
 });
 
 /**
