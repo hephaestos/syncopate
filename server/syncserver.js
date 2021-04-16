@@ -83,29 +83,33 @@ app.post(createUIDPath, (req, res) => {
 });
 
 /**
- * TODO: We will want to manually set the _id in the insertOne
- *  method with our own unique session names
+ * POST method to insert/create a new Syncopate session on the backend
  */
 app.post(createSyncopateSession, async (req, res) => {
-    let sessionID = uniqueID();
-    const query = await db.collection('sessions').findOne({ _id: sessionID });
+    let sessionID = uniqueID(); // Uniquely generated session ID
+    const query = await db.collection('sessions').findOne({ _id: sessionID }); // See if session ID exists in DB
+
+    // If we did not generate a unique ID, generate another
     if (query != null) sessionID = uniqueID();
     const userID = req.sessionID;
+
+    // Create new Syncopate session model for this user
     const userSession = new SyncSessionModel(userID);
     const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
 
+    // Make sure user has not already started hostng a session. If so, send an error message
     if (userSessionExists != null) {
-        res.send('User cannot possess more than one session');
+        res.status(400).send('User cannot possess more than one session');
     } else {
         db.collection('sessions').insertOne({
             _id: sessionID,
-            userSession,
+            userSession, // Creating a userSession object in newly created doc
         },
-        (error, result) => {
+        (error) => {
             if (error) res.send(error);
-            else res.send(JSON.parse(result).insertedID);
         });
     }
+    res.status(200).send(`Session created with sessionID: ${sessionID}`);
 });
 
 /**
