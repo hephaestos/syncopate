@@ -20,7 +20,7 @@ class UserDisplay extends Component {
             return (
                 <div className="header2">
                     <div className="container-header2">
-                        <img src="spotify_icon.png" alt="spotify" />
+                        <img src="..\images\spotify_icon.png" alt="spotify" />
                         <h1>User:</h1>
                         <h2>{spotifyService.getUserData()}</h2>
                     </div>
