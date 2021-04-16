@@ -8,12 +8,16 @@
  */
 import swaggerJSDoc from 'swagger-jsdoc'; // Will be used for creating API specific documentation in the future
 import pkg from 'swagger-ui-express'; // Will be used to generate nice HTML/CSS pages for documentation in future
-import express from 'express'; // Express API library
+import express, { json } from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
 import mongoose from 'mongoose';
+
 // eslint-disable-next-line import/extensions
 import { sessionSecret, URL } from './secrets.js';
+
+// eslint-disable-next-line import/extensions
+import { SyncSessionModel, uniqueID } from './syncSessionModel.js';
 
 const { serve, setup } = pkg;
 
@@ -52,7 +56,7 @@ app.use(session({
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
-        collectionName: 'sessions',
+        collectionName: 'UIDs',
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
@@ -62,7 +66,8 @@ app.use(express.json()); // Allows for parsing of JSON data in request body
 app.use('/API', serve, setup(openapiSpecification)); // Route to display API documentation, in the future
 
 // Path constants
-const createPath = '/create-session';
+const createUIDPath = '/create-UID';
+const createSyncopateSession = '/create-session';
 
 /**
  * @summary This POST method is used to create a new user session on the MongoDB backend using a
@@ -73,18 +78,33 @@ const createPath = '/create-session';
  * @requires createPath The route for this POST request
  * @todo Implement session name checking to avoid duplicates
  */
-app.post(createPath, async (req, res) => {
-    // eslint-disable-next-line no-useless-concat
-    const query = { session: { $regex: '.*' + `${req.body.session_name}` } };
-    const name = await db.collection('sessions').findOne(query);
-    if (name == null) {
-        req.session.UserSession = {
-            session_name: req.body.session_name,
-            session_password: req.body.password,
-        };
-        res.send('Session created');
+app.post(createUIDPath, (req, res) => {
+    res.status(204).send('OK');
+});
+
+/**
+ * TODO: We will want to manually set the _id in the insertOne
+ *  method with our own unique session names
+ */
+app.post(createSyncopateSession, async (req, res) => {
+    let sessionID = uniqueID();
+    const query = await db.collection('sessions').findOne({ _id: sessionID });
+    if (query != null) sessionID = uniqueID();
+    const userID = req.sessionID;
+    const userSession = new SyncSessionModel(userID);
+    const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
+
+    if (userSessionExists != null) {
+        res.send('User cannot possess more than one session');
     } else {
-        res.send('Name already being used!');
+        db.collection('sessions').insertOne({
+            _id: sessionID,
+            userSession,
+        },
+        (error, result) => {
+            if (error) res.send(error);
+            else res.send(JSON.parse(result).insertedID);
+        });
     }
 });
 
