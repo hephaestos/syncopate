@@ -1,5 +1,8 @@
 # Syncopate Server
 
+## Requirements
+- [node](https://nodejs.org/) v12.18.4 
+
 ## Initial Setup
 To get started just install the node packages with
 `npm install`

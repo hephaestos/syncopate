@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const authUrl = 'https://accounts.spotify.com';
 const authEndpoint = `${authUrl}/authorize`;
 const clientId = 'f91290ac20d049f683b9dc9c7785fa21';
@@ -40,41 +38,11 @@ export default {
                 window.location.hash = '';
                 token = hash.access_token;
                 if (token) {
-                    const authStr = `Bearer ${token}`;
-                    const url = `${authUrl}/api/token`;
-                    axios.post(url, { headers: { Authorization: authStr } })
-                        .then((res) => {
-                            console.log(res);
-                            return res;
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            return err;
-                        });
                     localStorage.setItem('spotify_token', token);
                 }
             }
 
             isAuth = !!token;
         }
-    },
-    getUserData() {
-        if (!isAuth) {
-            return null;
-        }
-
-        const authStr = `Bearer ${token}`;
-        const url = 'https://api.spotify.com/v1/me';
-        axios.get(url, { headers: { Authorization: authStr } })
-            .then((res) => {
-                console.log(res);
-                return res;
-            })
-            .catch((err) => {
-                console.log(err);
-                return err;
-            });
-
-        return null;
     },
 };
