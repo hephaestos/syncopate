@@ -1,13 +1,8 @@
 .SongDisplay {
-    display:inline;
-    position: absolute;
     text-align: center;
-    left: 0;
-    right: 0;
-    top:30%;
-    margin-left: auto;
-    margin-right: auto;
-
+    background-image: url('../images/background.png');
+    height:100vh;
+    padding-top: 10%;
 }
 
 #albumArt {
@@ -19,5 +14,5 @@
 }
 
 p {
-    color:black;
+    color:white;
 }

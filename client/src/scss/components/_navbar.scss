@@ -3,8 +3,10 @@
      color: $syncopate-yellow;
  }
 .Navbar {
-    display:inline;
-    position: fixed;
-    top:0;
-    text-align: center;
+    height: 100px;
+    background: $blue-to-dark-blue;
+
+    @media (max-height:550px) {
+        display:none;
+    }
 }
