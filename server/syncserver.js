@@ -14,7 +14,7 @@ import MongoStore from 'connect-mongo'; // Database for backend storage of user 
 import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
 import { sessionSecret, URL } from './secrets.js'; // Holds private backend information not to be displayed on GitHub
-
+import syncopateID from sessionSecret.js
 const { serve, setup } = pkg;
 
 const options = {
@@ -94,11 +94,11 @@ app.get(joinPath, async(req, res) => {
     const name = await db.collection('sessions').findOne(queryUserName);
     if(name != null)
     {
-        const sessionInfo = db.collection('sessions').findOne(queryUserName, {_id: 0, 'expires': 0, 'session': 0});
-        const docString = JSON.stringify(sessionInfo, null, ' ');
-        const username = JSON.parse(docString);
-        if(req.body.password == username.session_name){
-            //Join the Session
+        const userSession = JSON.parse(JSON.stringify(name));
+        const sessionInfo = JSON.parse(userSession.session);
+    
+        if(req.body.password === sessionInfo.UserSession.session_password){
+            res.send('Accepted');
         }
         else
         {
@@ -111,6 +111,20 @@ app.get(joinPath, async(req, res) => {
     }
     
 });
+
+expressSession = { 
+    "session_id": "riegert", "users": ""
+};
+
+if(syncopateID == sessionID)
+{
+    //add the user to the list
+    userList = expressSession["users"];
+    userList = userList.concat(", " + userSession);
+}
+else{
+    res.send('Not a valid session. Please create or rejoin.');
+}
 
 /**
  * @requires port The default port to connect to. Temporarily set to 4000
