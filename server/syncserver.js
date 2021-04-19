@@ -12,6 +12,7 @@ import express, { json } from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
 import mongoose from 'mongoose';
+
 // eslint-disable-next-line import/extensions
 import { sessionSecret, URL } from './secrets.js'; // Holds private backend information not to be displayed on GitHub
 import syncopateID from sessionSecret.js
@@ -52,7 +53,7 @@ app.use(session({
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
-        collectionName: 'sessions',
+        collectionName: 'UIDs',
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
@@ -64,6 +65,8 @@ app.use('/API', serve, setup(openapiSpecification)); // Route to display API doc
 // Path constants
 const createPath = '/create-session';
 const joinPath = '/join-session';
+const createUIDPath = '/create-UID';
+const createSyncopateSession = '/create-session';
 
 /**
  * @summary This POST method is used to create a new user session on the MongoDB backend using a
@@ -74,16 +77,28 @@ const joinPath = '/join-session';
  * @requires createPath The route for this POST request
  * @todo Implement session name checking to avoid duplicates
  */
-app.post(createPath, async (req, res) => {
-    // eslint-disable-next-line no-useless-concat
-    const query = { session: { $regex: '.*' + `${req.body.session_name}` } };
-    const name = await db.collection('sessions').findOne(query);
-    if (name == null) {
-        req.session.UserSession = {
-            session_name: req.body.session_name,
-            session_password: req.body.password,
-        };
-        res.send('Session created');
+app.post(createUIDPath, (req, res) => {
+    res.status(204).send('OK');
+});
+
+/**
+ * POST method to insert/create a new Syncopate session on the backend
+ */
+app.post(createSyncopateSession, async (req, res) => {
+    let sessionID = uniqueID(); // Uniquely generated session ID
+    const query = await db.collection('sessions').findOne({ _id: sessionID }); // See if session ID exists in DB
+
+    // If we did not generate a unique ID, generate another
+    if (query != null) sessionID = uniqueID();
+    const userID = req.sessionID;
+
+    // Create new Syncopate session model for this user
+    const userSession = new SyncSessionModel(userID);
+    const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
+
+    // Make sure user has not already started hostng a session. If so, send an error message
+    if (userSessionExists != null) {
+        res.status(400).send('User cannot possess more than one session');
     } else {
         res.send('Name already being used!');  
     }
@@ -110,6 +125,14 @@ app.get(joinPath, async(req, res) => {
         res.send('Session not available.');
     }
     
+        db.collection('sessions').insertOne({
+            _id: sessionID,
+            userSession, // Creating a userSession object in newly created doc
+        },
+        (error) => {
+            if (error) res.send(error);
+        });
+    res.status(200).send(`Session created with sessionID: ${sessionID}`);
 });
 
 expressSession = { 
