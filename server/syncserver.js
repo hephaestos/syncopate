@@ -66,7 +66,7 @@ app.use(session({
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
-        collectionName: 'express',
+        collectionName: 'UIDs',
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
@@ -81,14 +81,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', async (socket) => {
     try {
-        const newUserID = uuidv4();
-        const date = new Date();
-        date.setDate(date.getDate() + 1);
-        await db.collection('UIDs').insertOne({
-            _id: newUserID,
-            expires: date,
-        });
-
+        const newUserID = socket.request.headers.cookie.replace('syncopate.sid=s%3A', '').split('.')[0];
         connectedUsers.set(socket.id, newUserID);
         await db
             .collection('UIDs')
