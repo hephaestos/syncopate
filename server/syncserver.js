@@ -7,45 +7,30 @@
  * MongoDB cluster. The POST method ensures user is creating unique session name, and GET method
  * to join a session ensures session already exists and user has provided valid password.
  */
-import swaggerJSDoc from 'swagger-jsdoc'; // Will be used for creating API specific documentation in the future
-import pkg from 'swagger-ui-express'; // Will be used to generate nice HTML/CSS pages for documentation in future
 import express from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
-import mongoose from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose'; // Allows for use of NoSQL commands to pull from Mongo DB
 
 // eslint-disable-next-line import/extensions
 import * as http from 'http';
-import * as socketio from 'socket.io';
+import * as socketio from 'socket.io'; // Module to handle Syncopate music sessions
 // eslint-disable-next-line import/extensions
-import { sessionSecret, URL } from './secrets.js';
+import { sessionSecret, URL } from './secrets.js'; // Server/backend secrets for server consturctor
 
 // eslint-disable-next-line import/extensions
-import { SyncSessionModel, uniqueID } from './syncSessionModel.js';
+import { SyncSessionModel, uniqueID } from './syncSessionModel.js'; // Model for Syncopate sessions and generating IDs
 
-const { serve, setup } = pkg;
-const connectedUsers = new Map();
+const connectedUsers = new Map(); // Map holds { socket.id : express session ID}
 
-const options = {
-    definition: {
-        openapi: '3.0.0', // Future documentation will use OpenAPI specification 3.0.0
-        info: {
-            title: 'Syncopate API',
-            version: '1.0.0',
-        },
-    },
-    apis: ['./syncserver.js'],
-};
-
-const openapiSpecification = swaggerJSDoc(options);
-
+// Constructing express server using sockets.io
 const app = express();
 const server = http.createServer(app);
 const io = new socketio.Server(server, {
     serveClient: true,
 });
 
+// Connect our databse backend to the server
 mongoose.connect(URL);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
@@ -66,23 +51,32 @@ app.use(session({
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
-        collectionName: 'UIDs',
+        collectionName: 'UIDs', // Where user IDs will be stored
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
 }));
 
-app.use(express.json()); // Allows for parsing of JSON data in request body
-app.use('/API', serve, setup(openapiSpecification)); // Route to display API documentation, in the future
-
+/**
+ * Test route for site landing page in order to test various API functionality. Can be removed
+ * for release
+ */
 app.get('/', (req, res) => {
-    res.sendFile('C:\\Users\\br4nd\\Desktop\\Syncopate\\syncopate\\server\\index.html');
+    res.sendFile('C:\\Users\\br4nd\\Desktop\\Syncopate\\syncopate\\server\\index.html'); // Load HTML page
 });
 
+/**
+ * This is the entry point for clients when they reach the Syncopate website. A new socket is
+ * established and a unique ID is generated for the user and stored on the database. The user has
+ * the ability to create, join, or leave rooms using their socket connection. There is also a test
+ * socket listener to test sending "messages" between a group of users in a room
+ */
 io.on('connection', async (socket) => {
     try {
+        // Grab the unique user ID from the socket header being sent to the server
         const newUserID = socket.request.headers.cookie.replace('syncopate.sid=s%3A', '').split('.')[0];
-        connectedUsers.set(socket.id, newUserID);
+        connectedUsers.set(socket.id, newUserID); // Add user ID to map with their socket ID
+        // Find user in database and make sure current session is set to null until they join a room
         await db
             .collection('UIDs')
             .updateOne({ _id: connectedUsers.get(socket.id) }, { $set: { currSession: null } });
@@ -91,24 +85,32 @@ io.on('connection', async (socket) => {
         console.log(`Caught an error: ${e}`);
     }
 
+    // Test method to send messages to all users connected to the server
     socket.on('chat message', (msg) => {
         console.log(msg);
-        io.emit('chat message', msg);
+        io.emit('chat message', msg); // Send msg back to all users
     });
 
+    /**
+     * Method to create a unique session for the user and add themselves to the room.
+     * For production/implementation of Spotify need to send session name back to socket
+     */
     socket.on('create session', async () => {
         let sessionID = uniqueID(); // Uniquely generated session ID
         const query = await db.collection('sessions').findOne({ _id: sessionID }); // See if session ID exists in DB
-        // If we did not generate a unique ID, generate another
+
+        // If we did not generate a unique ID, generate another. TODO: **Replace this method**
         if (query != null) sessionID = uniqueID();
-        const userID = connectedUsers.get(socket.id);
+
+        const userID = connectedUsers.get(socket.id); // Grab userID from global map
         // Create new Syncopate session model for this user
-        const userSession = new SyncSessionModel(userID);
+        const userSession = new SyncSessionModel(userID); // Create new session model for this user
         const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
 
         // Make sure user has not already started hostng a session. If so, send an error message
         if (userSessionExists != null) {
             console.log('User cannot posses more than one session');
+        // Otherwise, create a session on the backend
         } else {
             db.collection('sessions').insertOne({
                 _id: sessionID,
@@ -119,34 +121,40 @@ io.on('connection', async (socket) => {
             (error) => {
                 if (error) console.log(error);
             });
+            // Change user's current session to newly created session ID
             await db
                 .collection('UIDs')
                 .updateOne({ _id: connectedUsers.get(socket.id) },
                     { $set: { currSession: sessionID } });
             console.log(`Session created with sessionID: ${sessionID}`);
         }
-        socket.join(sessionID);
+        socket.join(sessionID); // Add this user/socket to a room with their session ID
     });
 
+    /**
+     * Method which is called automatically when the user disconnects from a session
+     * (i.e. they close out of their browser or by other means). Removes socket/user from their
+     * current session automatically. If the session is empty, deletes the session from the DB.
+     */
     socket.on('disconnect', async () => {
         const disID = connectedUsers.get(socket.id); // The actual randomly generated userID
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: disID }); // Grab Promise of user from DB, if they exist
             const currSess = currUser.currSession; // Current session user is in
-            if (currSess != null) {
+            if (currSess) {
                 let userInSess = await db.collection('sessions').findOne({ _id: currSess }); // See if session user is in exists
-                if (userInSess != null) { // If user is in actual session
+                if (userInSess) { // If user is in actual session
                     // Remove user from their current session
                     await db.collection('sessions').updateOne({ _id: currSess }, { $pull: { 'userSession.users': disID } });
                     userInSess = await db.collection('sessions').findOne({ _id: currSess }); // Refresh user list
-                    socket.leave(currSess);
+                    socket.leave(currSess); // Remove user from socket room
                     // If session is empty when user leaves, delete it
                     if (userInSess.userSession.users.length === 0) {
                         await db.collection('sessions').deleteOne({ _id: currSess });
                     }
                 }
             }
-            await db.collection('UIDs').deleteOne({ _id: disID });
+            await db.collection('UIDs').deleteOne({ _id: disID }); // Delete user from DB of connected users
         } catch (e) {
             console.log('Failed to find user with this ID');
         }
@@ -154,17 +162,23 @@ io.on('connection', async (socket) => {
         console.log(`User ${disID} disconnected`);
     });
 
+    /**
+     * Method for users to be able to join other, existing sessions. Checks to make sure
+     * the session exists, and if it does, add user's socket to room and adds them to room's DB
+     */
     socket.on('join session', async (sessionName) => {
         const currID = connectedUsers.get(socket.id);
         try {
-            const currUser = await db.collection('UIDs').findOne({ _id: currID });
+            const currUser = await db.collection('UIDs').findOne({ _id: currID }); // Make sure user exists
             if (currUser) {
-                await db.collection('UIDs').updateOne({ _id: currID }, { $set: { currSession: sessionName } });
-            }
-            const reqSession = await db.collection('sessions').findOne({ _id: sessionName });
-            if (reqSession) {
-                await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': currID } });
-                socket.join(sessionName);
+                const reqSession = await db.collection('sessions').findOne({ _id: sessionName });
+                // If session user is looking for exists, add them to the session's list of users
+                if (reqSession) {
+                    // If user exists, change their current session to the one they are joining
+                    await db.collection('UIDs').updateOne({ _id: currID }, { $set: { currSession: sessionName } });
+                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': currID } });
+                    socket.join(sessionName); // Add user's socket to room
+                }
             }
         } catch (e) {
             console.log(`User does not exist: ${e}`);
