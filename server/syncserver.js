@@ -125,6 +125,7 @@ io.on('connection', async (socket) => {
                     { $set: { currSession: sessionID } });
             console.log(`Session created with sessionID: ${sessionID}`);
         }
+        socket.join(sessionID);
     });
 
     socket.on('disconnect', async () => {
@@ -138,6 +139,7 @@ io.on('connection', async (socket) => {
                     // Remove user from their current session
                     await db.collection('sessions').updateOne({ _id: currSess }, { $pull: { 'userSession.users': disID } });
                     userInSess = await db.collection('sessions').findOne({ _id: currSess }); // Refresh user list
+                    socket.leave(currSess);
                     // If session is empty when user leaves, delete it
                     if (userInSess.userSession.users.length === 0) {
                         await db.collection('sessions').deleteOne({ _id: currSess });
@@ -162,6 +164,7 @@ io.on('connection', async (socket) => {
             const reqSession = await db.collection('sessions').findOne({ _id: sessionName });
             if (reqSession) {
                 await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': currID } });
+                socket.join(sessionName);
             }
         } catch (e) {
             console.log(`User does not exist: ${e}`);
@@ -169,7 +172,8 @@ io.on('connection', async (socket) => {
     });
 });
 
-// Start the server and begin listening on port 4000
+// Start the server and begin listening on port 4000. Will need to be setup with Syncopate
+// website for production
 server.listen(4000, () => {
     console.log('Listening');
 });
