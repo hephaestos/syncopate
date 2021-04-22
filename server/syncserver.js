@@ -209,6 +209,7 @@ io.on('connection', async (socket) => {
         // Make sure user has not already started hostng a session. If so, send an error message
         if (userSessionExists != null) {
             console.log('User cannot posses more than one session');
+            io.to(sessionID).emit('create session', 'Error: User already created session');
         // Otherwise, create a session on the backend
         } else {
             db.collection('sessions').insertOne({
@@ -226,9 +227,9 @@ io.on('connection', async (socket) => {
                 .updateOne({ _id: socket.id },
                     { $set: { currSession: sessionID } });
             console.log(`Session created with sessionID: ${sessionID}`);
+            io.to(sessionID).emit('create session', sessionID);
         }
         socket.join(sessionID); // Add this user/socket to a room with their session ID
-        io.to(sessionID).emit('create session', sessionID);
     });
 
     /**
