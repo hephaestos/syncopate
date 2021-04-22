@@ -6,8 +6,12 @@ let users;
 const socket = io.connect('http://localhost:4000');
 
 export default {
-    sessionID,
-    users,
+    getSessionId() {
+        return sessionID;
+    },
+    getUsers() {
+        return users;
+    },
     createSession() {
         socket.emit('create session');
         socket.on('create session', (res) => {
@@ -15,9 +19,9 @@ export default {
         });
     },
     joinSession(code) {
+        sessionID = code;
         socket.emit('join session', code);
         socket.on('join session', (res) => {
-            sessionID = code;
             users = res;
         });
     },
