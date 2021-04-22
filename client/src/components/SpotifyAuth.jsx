@@ -1,5 +1,4 @@
 import React from 'react';
-import spotifyService from '../spotifyService';
 
 /**
  * @component SpotifyAuth
@@ -9,7 +8,7 @@ import spotifyService from '../spotifyService';
 function SpotifyAuth() {
     return (
         <a
-            href={`${spotifyService.authEndpoint}?client_id=${spotifyService.clientId}&redirect_uri=${spotifyService.redirectUri}&scope=${spotifyService.scopes.join('%20')}&response_type=token&show_dialog=true`}
+            href="http://localhost:4000/login"
         >
             <button
                 type="button"
