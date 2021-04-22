@@ -1,9 +1,7 @@
 import React from 'react';
 import Userbar from './Userbar';
-import Navbar from './Navbar';
 import Searchbar from './Searchbar';
 import SongDisplay from './SongDisplay';
-import Controls from './Controls';
 
 /**
  * @component Session
@@ -16,11 +14,16 @@ import Controls from './Controls';
 function Session() {
     return (
         <div className="Session">
-            <Userbar />
-            <Navbar />
-            <SongDisplay coverArt="./images/birthofthecool.jpg" artist="Miles Davis" songTitle="Move" />
-            <Controls />
-            <Searchbar />
+            <div className="container-fluid fill">
+                <div className="row">
+                    {/* <div className="col"><Navbar /></div> */}
+                </div>
+                <div className="row">
+                    <div className="col col-1 d-none d-md-block"><Userbar /></div>
+                    <div className="col col-xs-9"><SongDisplay songTitle="Move" artist="Miles Davis" coverArt="/images/birthofthecool.jpg" /></div>
+                    <div className="col col-md-2 col-xs-3"><Searchbar /></div>
+                </div>
+            </div>
         </div>
     );
 }
