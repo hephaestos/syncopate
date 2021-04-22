@@ -23,6 +23,7 @@ import {
 } from './secrets.js'; // Server/backend secrets for server consturctor
 
 import { SyncSessionModel, uniqueID } from './syncSessionModel.js'; // Model for Syncopate sessions and generating IDs
+import { constants } from 'buffer';
 
 // Constructing express server using sockets.io
 const app = express();
@@ -203,8 +204,9 @@ io.on('connection', async (socket) => {
         if (query != null) sessionID = uniqueID();
 
         const userID = socket.id; // Grab userID from global map
-        // Create new Syncopate session model for this user
-        const userSession = new SyncSessionModel(userID); // Create new session model for this user
+        const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
+        // Create new session model for this user
+        const userSession = new SyncSessionModel({ userID: spotUsername });
         const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
 
         // Make sure user has not already started hostng a session. If so, send an error message
@@ -278,8 +280,19 @@ io.on('connection', async (socket) => {
                 if (reqSession) {
                     // If user exists, change their current session to the one they are joining
                     await db.collection('UIDs').updateOne({ _id: currID }, { $set: { currSession: sessionName } });
-                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': currID } });
+                    // Grab spotify ID
+                    const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
+                    // Add user to session
+                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID: spotUsername } } });
                     socket.join(sessionName); // Add user's socket to room
+
+                    let usersInSession = await db.collection('sessions').findOne({ _id: sessionName });
+                    usersInSession = usersInSession.userSession.users;
+                    const users = [];
+                    usersInSession.array.forEach((element) => {
+                        users.push(element.spotName);
+                    });
+                    io.to(sessionName).emit('join session', users);
                 }
             }
         } catch (e) {
