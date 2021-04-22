@@ -1,11 +1,17 @@
 /* eslint-disable camelcase */
+import sessionService from './sessionService';
+
 let access_token;
 let refresh_token;
 let isAuth = false;
+let id;
 
 export default {
     access_token,
     refresh_token,
+    getId() {
+        return id;
+    },
     isAuth() {
         return isAuth;
     },
@@ -38,6 +44,12 @@ export default {
             }
 
             isAuth = !!access_token;
+            if (isAuth) {
+                sessionService.getSpotifyId(access_token, (res) => {
+                    id = res;
+                    console.log(id);
+                });
+            }
         }
     },
 };

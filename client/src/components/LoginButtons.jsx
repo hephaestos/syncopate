@@ -1,6 +1,7 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import io from 'socket.io-client';
+import sessionService from '../sessionService';
 import spotifyService from '../spotifyService';
 import SpotifyAuth from './SpotifyAuth';
 
@@ -15,7 +16,7 @@ class LoginButtons extends Component {
         this.state = {
             isAuth: spotifyService.isAuth(),
         };
-        this.socket = io.connect('http://localhost:4000');
+        this.createSession = this.createSession.bind(this);
     }
 
     componentDidMount() {
@@ -30,8 +31,11 @@ class LoginButtons extends Component {
     }
 
     createSession() {
-        console.log(this);
-        this.socket.emit('create session');
+        sessionService.createSession();
+    }
+
+    joinSession(code) {
+        sessionService.joinSession(code);
     }
 
     render() {
@@ -39,7 +43,7 @@ class LoginButtons extends Component {
         if (isAuth) {
             return (
                 <div className="LoginButtons">
-                    <button type="button" onClick={this.createSession} className="btn btn-outline-success btn-lg">Create Session</button>
+                    <Link to="/session"><button type="button" onClick={this.createSession} className="btn btn-outline-success btn-lg">Create Session</button></Link>
                     <Link to="/session"><button type="button" className="btn btn-outline-success btn-lg">Join Session</button></Link>
                 </div>
             );

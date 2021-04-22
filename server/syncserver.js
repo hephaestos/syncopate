@@ -285,6 +285,21 @@ io.on('connection', async (socket) => {
             console.log(`User does not exist: ${e}`);
         }
     });
+
+    socket.on('get spotify id', async (access_token) => {
+        const options = {
+            url: 'https://api.spotify.com/v1/me',
+            headers: { Authorization: `Bearer ${access_token}` },
+            json: true,
+        };
+
+        // use the access token to access the Spotify Web API
+        request.get(options, (err, res, body) => {
+            console.log(body);
+
+            io.to(socket.id).emit('get spotify id', body);
+        });
+    });
 });
 
 // Start the server and begin listening on port 4000. Will need to be setup with Syncopate
