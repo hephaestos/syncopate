@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import io from 'socket.io-client';
 import spotifyService from '../spotifyService';
 import SpotifyAuth from './SpotifyAuth';
 
@@ -14,15 +15,23 @@ class LoginButtons extends Component {
         this.state = {
             isAuth: spotifyService.isAuth(),
         };
+        this.socket = io.connect('http://localhost:4000');
     }
 
     componentDidMount() {
-        // if (!spotifyService.isAuth()) {
-        //     spotifyService.authorize();
-        //     this.setState(() => ({
-        //         isAuth: spotifyService.isAuth(),
-        //     }));
-        // }
+        if (!spotifyService.isAuth()) {
+            spotifyService.authorize();
+            this.setState(() => ({
+                isAuth: spotifyService.isAuth(),
+            }));
+        }
+        console.log(spotifyService.access_token);
+        console.log(spotifyService.refresh_token);
+    }
+
+    createSession() {
+        console.log(this);
+        this.socket.emit('create session');
     }
 
     render() {
@@ -30,7 +39,7 @@ class LoginButtons extends Component {
         if (isAuth) {
             return (
                 <div className="LoginButtons">
-                    <button type="button" className="btn btn-outline-success btn-lg">Create Session</button>
+                    <button type="button" onClick={this.createSession} className="btn btn-outline-success btn-lg">Create Session</button>
                     <Link to="/session"><button type="button" className="btn btn-outline-success btn-lg">Join Session</button></Link>
                 </div>
             );
