@@ -32,7 +32,10 @@ class LoginButtons extends Component {
 
     createSession() {
         sessionService.createSession();
-        return <Redirect to="/session/" />;
+    }
+
+    joinSession(code) {
+        sessionService.joinSession(code);
     }
 
     render() {
