@@ -176,6 +176,7 @@ io.on('connection', async (socket) => {
             .collection('UIDs')
             .insertOne({
                 _id: newUserID,
+                spotifyID: null,
                 created: new Date(),
                 currSession: null,
             });
@@ -298,6 +299,7 @@ io.on('connection', async (socket) => {
             console.log(body);
 
             io.to(socket.id).emit('get spotify id', body);
+            db.collection('UIDs').updateOne({ _id: socket.id }, { $set: { spotifyID: body.id } });
         });
     });
 });
