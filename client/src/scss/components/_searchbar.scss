@@ -1,8 +1,6 @@
  .Searchbar {
-    background-color:$syncopate-blue;
-    height:100%;
-    float:right;
-    width:12rem
+    background: $blue-to-dark-blue;
+    height:100vh;
 }
 input, input:active {
     border:none;

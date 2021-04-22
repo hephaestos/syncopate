@@ -5,6 +5,7 @@ $syncopate-dark-blue: #040d1e;
 $syncopate-blue: #091d42;
 $syncopate-yellow: #d2e603;
 $syncopate-green: #03e6bd;
+$blue-to-dark-blue: linear-gradient(to right, $syncopate-blue, $syncopate-dark-blue);
 
 /*
  * FONTS
