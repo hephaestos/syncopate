@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import LoginButtons from '../LoginButtons';
+import User from '../User';
 
 it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<LoginButtons />, div);
+    ReactDOM.render(<User />, div);
 });
