@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import sessionService from '../sessionService';
 import io from 'socket.io-client';
 import spotifyService from '../spotifyService';
+import sessionService from '../sessionService';
 import SpotifyAuth from './SpotifyAuth';
 import Form from './Form';
 /**
