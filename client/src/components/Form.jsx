@@ -4,7 +4,7 @@ import sessionService from '../sessionService';
 
 class Form extends Component {
     join(event) {
-        sessionService.joinSession(event.target.roomCode);
+        sessionService.joinSession(event.target.roomCode.value);
     }
 
     render() {
