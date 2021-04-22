@@ -24,8 +24,6 @@ import {
 
 import { SyncSessionModel, uniqueID } from './syncSessionModel.js'; // Model for Syncopate sessions and generating IDs
 
-const connectedUsers = new Map(); // Map holds { socket.id : express session ID}
-
 // Constructing express server using sockets.io
 const app = express();
 const server = http.createServer(app);
@@ -61,7 +59,7 @@ app.use(session({
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
-        collectionName: 'UIDs', // Where user IDs will be stored
+        collectionName: 'express', // Where user IDs will be stored
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
@@ -172,13 +170,16 @@ app.get('/refresh_token', (req, res) => {
 io.on('connection', async (socket) => {
     try {
         // Grab the unique user ID from the socket header being sent to the server
-        const newUserID = socket.request.headers.cookie.split('; ')[1].replace('syncopate.sid=s%3A', '').split('.')[0];
+        const newUserID = socket.id;
         console.log(newUserID);
-        connectedUsers.set(socket.id, newUserID); // Add user ID to map with their socket ID
         // Find user in database and make sure current session is set to null until they join a room
         await db
             .collection('UIDs')
-            .updateOne({ _id: connectedUsers.get(socket.id) }, { $set: { currSession: null } });
+            .insertOne({
+                _id: newUserID,
+                created: new Date(),
+                currSession: null,
+            });
         console.log(`Connected user: ${newUserID}`);
     } catch (e) {
         console.log(`Caught an error: ${e}`);
@@ -201,7 +202,7 @@ io.on('connection', async (socket) => {
         // If we did not generate a unique ID, generate another. TODO: **Replace this method**
         if (query != null) sessionID = uniqueID();
 
-        const userID = connectedUsers.get(socket.id); // Grab userID from global map
+        const userID = socket.id; // Grab userID from global map
         // Create new Syncopate session model for this user
         const userSession = new SyncSessionModel(userID); // Create new session model for this user
         const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
@@ -223,7 +224,7 @@ io.on('connection', async (socket) => {
             // Change user's current session to newly created session ID
             await db
                 .collection('UIDs')
-                .updateOne({ _id: connectedUsers.get(socket.id) },
+                .updateOne({ _id: socket.id },
                     { $set: { currSession: sessionID } });
             console.log(`Session created with sessionID: ${sessionID}`);
         }
@@ -236,7 +237,7 @@ io.on('connection', async (socket) => {
      * current session automatically. If the session is empty, deletes the session from the DB.
      */
     socket.on('disconnect', async () => {
-        const disID = connectedUsers.get(socket.id); // The actual randomly generated userID
+        const disID = socket.id; // The actual randomly generated userID
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: disID }); // Grab Promise of user from DB, if they exist
             const currSess = currUser.currSession; // Current session user is in
@@ -257,7 +258,6 @@ io.on('connection', async (socket) => {
         } catch (e) {
             console.log('Failed to find user with this ID');
         }
-        connectedUsers.delete(socket.id);
         console.log(`User ${disID} disconnected`);
     });
 
@@ -266,7 +266,7 @@ io.on('connection', async (socket) => {
      * the session exists, and if it does, add user's socket to room and adds them to room's DB
      */
     socket.on('join session', async (sessionName) => {
-        const currID = connectedUsers.get(socket.id);
+        const currID = socket.id;
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: currID }); // Make sure user exists
             if (currUser) {
