@@ -6,8 +6,8 @@
 class SyncSessionModel {
     constructor(uid, spotName) {
         this.uid = uid; // Holds userID
-        this.users = [{}]; // List of users in this Syncopate session
-        this.users.push({ uid, spotName }); // Add user who created session to session
+        this.users = []; // List of users in this Syncopate session
+        this.users.push({ userID: uid, spotName }); // Add user who created session to session
         this.currSong = null; // Current song playing
         this.isPlaying = false; // Playback status
     }
