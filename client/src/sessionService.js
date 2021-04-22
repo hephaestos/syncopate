@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import io from 'socket.io-client';
 
 let sessionID;
@@ -18,6 +19,12 @@ export default {
         socket.on('join session', (res) => {
             sessionID = code;
             users = res;
+        });
+    },
+    getSpotifyId(access_token, callback) {
+        socket.emit('get spotify id', access_token);
+        socket.on('get spotify id', (body) => {
+            callback(body.id);
         });
     },
 };

@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import sessionService from '../sessionService';
 import spotifyService from '../spotifyService';
 import SpotifyAuth from './SpotifyAuth';
