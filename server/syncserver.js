@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-console */
 /**
 * @author Brandon T, Taylor R., Remy M., Jacob J., Daniel F.
@@ -18,7 +19,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import querystring from 'querystring';
 import {
-    sessionSecret, URL, clientId, clientSecret,
+    sessionSecret, URL, client_id, client_secret,
 } from './secrets.js'; // Holds private backend information not to be displayed on GitHub
 
 const swaggerOptions = {
@@ -35,7 +36,8 @@ const { serve, setup } = pkg;
 const openapiSpecification = swaggerJSDoc(swaggerOptions);
 const app = express();
 const port = 4000; // Debugging port, will be hosted on private server in future
-const redirectUri = 'http://localhost:3000/callback';
+const redirect_uri = 'http://localhost:4000/callback';
+const frontend_uri = 'http://localhost:3000';
 const stateKey = 'spotify_auth_state';
 
 const generateRandomString = (length) => {
@@ -113,9 +115,9 @@ app.get('/login', (req, res) => {
     res.redirect(`https://accounts.spotify.com/authorize?${
         querystring.stringify({
             response_type: 'code',
-            clientId,
+            client_id,
             scope,
-            redirectUri,
+            redirect_uri,
             state,
         })}`);
 });
@@ -129,7 +131,7 @@ app.get('/callback', (req, res) => {
     const storedState = req.cookies ? req.cookies[stateKey] : null;
 
     if (state === null || state !== storedState) {
-        res.redirect(`/#${
+        res.redirect(`${frontend_uri}/#${
             querystring.stringify({
                 error: 'state_mismatch',
             })}`);
@@ -139,23 +141,23 @@ app.get('/callback', (req, res) => {
             url: 'https://accounts.spotify.com/api/token',
             form: {
                 code,
-                redirectUri,
+                redirect_uri,
                 grant_type: 'authorization_code',
             },
             headers: {
-                Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+                Authorization: `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString('base64')}`,
             },
             json: true,
         };
 
         request.post(authOptions, (error, response, body) => {
             if (!error && response.statusCode === 200) {
-                const { accessToken } = body;
-                const { refreshToken } = body;
+                const { access_token } = body;
+                const { refresh_token } = body;
 
                 const options = {
                     url: 'https://api.spotify.com/v1/me',
-                    headers: { Authorization: `Bearer ${accessToken}` },
+                    headers: { Authorization: `Bearer ${access_token}` },
                     json: true,
                 };
 
@@ -165,13 +167,13 @@ app.get('/callback', (req, res) => {
                 });
 
                 // we can also pass the token to the browser to make requests from there
-                res.redirect(`/#${
+                res.redirect(`${frontend_uri}/#${
                     querystring.stringify({
-                        accessToken,
-                        refreshToken,
+                        access_token,
+                        refresh_token,
                     })}`);
             } else {
-                res.redirect(`/#${
+                res.redirect(`${frontend_uri}/#${
                     querystring.stringify({
                         error: 'invalid_token',
                     })}`);
@@ -185,7 +187,7 @@ app.get('/refresh_token', (req, res) => {
     const { refreshToken } = req.query;
     const authOptions = {
         url: 'https://accounts.spotify.com/api/token',
-        headers: { Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}` },
+        headers: { Authorization: `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString('base64')}` },
         form: {
             grant_type: 'refresh_token',
             refreshToken,

@@ -17,12 +17,12 @@ class LoginButtons extends Component {
     }
 
     componentDidMount() {
-        if (!spotifyService.isAuth()) {
-            spotifyService.authorize();
-            this.setState(() => ({
-                isAuth: spotifyService.isAuth(),
-            }));
-        }
+        // if (!spotifyService.isAuth()) {
+        //     spotifyService.authorize();
+        //     this.setState(() => ({
+        //         isAuth: spotifyService.isAuth(),
+        //     }));
+        // }
     }
 
     render() {
