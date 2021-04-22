@@ -12,3 +12,25 @@ $blue-to-dark-blue: linear-gradient(to right, $syncopate-blue, $syncopate-dark-b
  */
 $header-font-size: 2em;
 $header-font-family: 'Roboto Mono', monospace;
+
+/*
+ * BREAKPOINTS
+ */
+$mobile: 480px;
+$tablet: 768px;
+$laptop: 1024px;
+$desktop: 1200px;
+@mixin breakpoint($point) {
+    @if $point == desktop {
+      @media (min-width: 1200px) { @content ; }
+   }
+    @else if $point == laptop {
+      @media (min-width: 1024px) and (max-width: 1199px) { @content ; }
+   }
+     @else if $point == tablet {
+      @media (min-width: 768px) and (max-width: 1023px) { @content ; }
+   }
+   @else if $point == mobile {
+      @media (min-width: 480px) and (max-width: 767px)  { @content ; }
+   }
+ }
