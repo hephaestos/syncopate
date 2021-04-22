@@ -66,15 +66,18 @@ app.get('/', (req, res) => {
 });
 
 /**
- * This is the entry point for clients when they reach the Syncopate website. A new socket is
- * established and a unique ID is generated for the user and stored on the database. The user has
- * the ability to create, join, or leave rooms using their socket connection. There is also a test
- * socket listener to test sending "messages" between a group of users in a room
+ * @description This is the entry point for clients when they reach the Syncopate website.
+ *  A new socket is established and a unique ID is generated for the user and stored on the
+ * database. The user has the ability to create, join, or leave rooms using their socket
+ * connection. There is also a test socket listener to test sending "messages" between a
+ * group of users in a room.
+ * @emits chat_message Sends message back to users when message is received. For testing
  */
 io.on('connection', async (socket) => {
     try {
         // Grab the unique user ID from the socket header being sent to the server
-        const newUserID = socket.request.headers.cookie.replace('syncopate.sid=s%3A', '').split('.')[0];
+        const newUserID = socket.request.headers.cookie.split('; ')[1].replace('syncopate.sid=s%3A', '').split('.')[0];
+        console.log(newUserID);
         connectedUsers.set(socket.id, newUserID); // Add user ID to map with their socket ID
         // Find user in database and make sure current session is set to null until they join a room
         await db
