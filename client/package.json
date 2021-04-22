@@ -25,6 +25,7 @@
   "dependencies": {
     "@babel/cli": "^7.12.13",
     "@babel/core": "^7.12.13",
+    "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "file-loader": "^6.2.0",
     "html-loader": "^2.1.2",
@@ -34,7 +35,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "sass-loader": "^10.1.1"
+    "sass-loader": "^10.1.1",
+    "socket.io-client": "^4.0.1"
   },
   "scripts": {
     "start": "webpack serve --mode development",

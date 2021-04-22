@@ -1,4 +1,6 @@
+/* eslint-disable import/extensions */
 /* eslint-disable no-console */
+/* eslint-disable camelcase */
 /**
  * @author Brandon T, Taylor R., Remy M., Jacob J., Daniel F.
  * @version 0.0.1
@@ -11,14 +13,15 @@ import express from 'express'; // Express API library
 import session from 'express-session'; // Used to store and manage user sessions
 import MongoStore from 'connect-mongo'; // Database for backend storage of user data
 import mongoose from 'mongoose'; // Allows for use of NoSQL commands to pull from Mongo DB
+import querystring from 'querystring';
+import request from 'request';
 
-// eslint-disable-next-line import/extensions
 import * as http from 'http';
 import * as socketio from 'socket.io'; // Module to handle Syncopate music sessions
-// eslint-disable-next-line import/extensions
-import { sessionSecret, URL } from './secrets.js'; // Server/backend secrets for server consturctor
+import {
+    sessionSecret, URL, client_id, client_secret,
+} from './secrets.js'; // Server/backend secrets for server consturctor
 
-// eslint-disable-next-line import/extensions
 import { SyncSessionModel, uniqueID } from './syncSessionModel.js'; // Model for Syncopate sessions and generating IDs
 
 const connectedUsers = new Map(); // Map holds { socket.id : express session ID}
@@ -26,8 +29,15 @@ const connectedUsers = new Map(); // Map holds { socket.id : express session ID}
 // Constructing express server using sockets.io
 const app = express();
 const server = http.createServer(app);
+const redirect_uri = 'http://localhost:4000/callback';
+const frontend_uri = 'http://localhost:3000';
+const stateKey = 'spotify_auth_state';
 const io = new socketio.Server(server, {
     serveClient: true,
+    cors: {
+        origin: frontend_uri,
+        methods: ['GET', 'POST'],
+    },
 });
 
 // Connect our databse backend to the server
@@ -36,9 +46,9 @@ mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
 /**
- * @summary Setup the Express Session client for the user, initialize cookie, and
- * connect to MongoDB backend. Initializes various settings for express sessions and store
- */
+* @summary Setup the Express Session client for the user, initialize cookie, and
+* connect to MongoDB backend. Initializes various settings for express sessions and store
+*/
 app.use(session({
     name: 'syncopate.sid',
     secret: sessionSecret,
@@ -55,14 +65,100 @@ app.use(session({
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
-}));
+})).use(express.static('public'));
 
 /**
  * Test route for site landing page in order to test various API functionality. Can be removed
  * for release
  */
 app.get('/', (req, res) => {
-    res.sendFile('C:\\Users\\br4nd\\Desktop\\Syncopate\\syncopate\\server\\index.html'); // Load HTML page
+    res.sendFile('index.html'); // Load HTML page
+});
+
+app.get('/login', (req, res) => {
+    // your application requests authorization
+    const scope = 'user-read-private user-read-email';
+    res.redirect(`https://accounts.spotify.com/authorize?${
+        querystring.stringify({
+            response_type: 'code',
+            client_id,
+            scope,
+            redirect_uri,
+        })}`);
+});
+
+app.get('/callback', (req, res) => {
+    // your application requests refresh and access tokens
+    // after checking the state parameter
+
+    const code = req.query.code || null;
+
+    res.clearCookie(stateKey);
+    const authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        form: {
+            code,
+            redirect_uri,
+            grant_type: 'authorization_code',
+        },
+        headers: {
+            Authorization: `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString('base64')}`,
+        },
+        json: true,
+    };
+
+    request.post(authOptions, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+            const { access_token } = body;
+            const { refresh_token } = body;
+
+            const options = {
+                url: 'https://api.spotify.com/v1/me',
+                headers: { Authorization: `Bearer ${access_token}` },
+                json: true,
+            };
+
+            // use the access token to access the Spotify Web API
+            request.get(options, (e, r, b) => {
+                console.log(b);
+            });
+
+            // we can also pass the token to the browser to make requests from there
+            res.redirect(`${frontend_uri}/#${
+                querystring.stringify({
+                    access_token,
+                    refresh_token,
+                })}`);
+        } else {
+            res.redirect(`${frontend_uri}/#${
+                querystring.stringify({
+                    error: 'invalid_token',
+                })}`);
+        }
+    });
+});
+
+app.get('/refresh_token', (req, res) => {
+    // requesting access token from refresh token
+    const { refreshToken } = req.query;
+    const authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        headers: { Authorization: `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString('base64')}` },
+        form: {
+            grant_type: 'refresh_token',
+            refreshToken,
+        },
+        json: true,
+    };
+
+    request.post(authOptions, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+            const { accessToken } = body;
+            res.send({
+                accessToken,
+            });
+        }
+    });
 });
 
 /**
