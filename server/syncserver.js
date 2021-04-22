@@ -206,7 +206,7 @@ io.on('connection', async (socket) => {
         const userID = socket.id; // Grab userID from global map
         const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
         // Create new session model for this user
-        const userSession = new SyncSessionModel({ userID: spotUsername });
+        const userSession = new SyncSessionModel({ userID, spotUsername });
         const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
 
         // Make sure user has not already started hostng a session. If so, send an error message
