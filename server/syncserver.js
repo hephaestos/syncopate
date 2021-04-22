@@ -286,12 +286,15 @@ io.on('connection', async (socket) => {
                     await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID: spotUsername } } });
                     socket.join(sessionName); // Add user's socket to room
 
+                    // Grab current users in session
                     let usersInSession = await db.collection('sessions').findOne({ _id: sessionName });
-                    usersInSession = usersInSession.userSession.users;
+                    usersInSession = usersInSession.userSession.users; // Grab user objects in array
                     const users = [];
+                    // For each user, append their username to array
                     usersInSession.array.forEach((element) => {
                         users.push(element.spotName);
                     });
+                    // Send usernames back to clients in room user joined
                     io.to(sessionName).emit('join session', users);
                 }
             }
