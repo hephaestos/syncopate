@@ -1,6 +1,5 @@
 import React from 'react';
 import Userbar from './Userbar';
-import Searchbar from './Searchbar';
 import SongDisplay from './SongDisplay';
 
 /**
@@ -20,8 +19,7 @@ function Session() {
                 </div>
                 <div className="row">
                     <div className="col col-1 d-none d-md-block"><Userbar /></div>
-                    <div className="col col-7 col-sm-8 col-md-9"><SongDisplay songTitle="Move" artist="Miles Davis" coverArt="/images/birthofthecool.jpg" /></div>
-                    <div className="col col-5 col-sm-4 col-md-2"><Searchbar /></div>
+                    <div className="col col-12 col-md-11"><SongDisplay songTitle="Move" artist="Miles Davis" coverArt="/images/birthofthecool.jpg" /></div>
                 </div>
             </div>
         </div>
