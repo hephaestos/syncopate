@@ -7,8 +7,9 @@ let isAuth = false;
 let id;
 
 export default {
-    access_token,
-    refresh_token,
+    getAccessToken() {
+        return access_token;
+    },
     getId() {
         return id;
     },
@@ -44,12 +45,12 @@ export default {
             }
 
             isAuth = !!access_token;
-            if (isAuth) {
-                sessionService.getSpotifyId(access_token, (res) => {
-                    id = res;
-                    console.log(id);
-                });
-            }
+        }
+        if (isAuth) {
+            sessionService.getSpotifyId(access_token, (res) => {
+                id = res;
+                console.log(id);
+            });
         }
     },
 };

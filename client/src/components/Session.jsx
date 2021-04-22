@@ -1,7 +1,8 @@
 import React from 'react';
+import SpotifyPlayer from 'react-spotify-web-playback';
 import Userbar from './Userbar';
 import Searchbar from './Searchbar';
-import SongDisplay from './SongDisplay';
+import spotifyService from '../spotifyService';
 
 /**
  * @component Session
@@ -20,7 +21,13 @@ function Session() {
                 </div>
                 <div className="row">
                     <div className="col col-1 d-none d-md-block"><Userbar /></div>
-                    <div className="col col-xs-9"><SongDisplay songTitle="Move" artist="Miles Davis" coverArt="/images/birthofthecool.jpg" /></div>
+                    <div className="col col-xs-9">
+                        <SpotifyPlayer
+                            token={spotifyService.getAccessToken()}
+                            uris={['spotify:track:4cOdK2wGLETKBW3PvgPWqT']}
+                            autoPlay
+                        />
+                    </div>
                     <div className="col col-md-2 col-xs-3"><Searchbar /></div>
                 </div>
             </div>
