@@ -21,7 +21,7 @@ function Session() {
                 <div className="row">
                     <div className="col col-1 d-none d-md-block"><Userbar /></div>
                     <div className="col col-xs-9"><SongDisplay songTitle="Move" artist="Miles Davis" coverArt="/images/birthofthecool.jpg" /></div>
-                    <div className="col col-md-2 col-xs-3"><Searchbar /></div>
+                    <div className="col col-md-2 col-xs-2"><Searchbar /></div>
                 </div>
             </div>
         </div>
