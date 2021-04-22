@@ -171,7 +171,6 @@ io.on('connection', async (socket) => {
     try {
         // Grab the unique user ID from the socket header being sent to the server
         const newUserID = socket.id;
-        console.log(newUserID);
         // Find user in database and make sure current session is set to null until they join a room
         await db
             .collection('UIDs')
@@ -229,6 +228,7 @@ io.on('connection', async (socket) => {
             console.log(`Session created with sessionID: ${sessionID}`);
         }
         socket.join(sessionID); // Add this user/socket to a room with their session ID
+        io.to(sessionID).emit('create session', sessionID);
     });
 
     /**
