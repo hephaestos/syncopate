@@ -7,12 +7,28 @@
 
 #albumArt {
     border-radius: 0;
-    height:15vw;
-    width:15vw;
+    @include breakpoint(desktop) {
+		height: 500px;
+        width: 500px;
+	}
+    @include breakpoint(laptop) {
+		height: 400px;
+        width: 400px;
+	}
+    @include breakpoint(tablet) {
+		height: 300px;
+        width: 300px;
+	}
+    @include breakpoint(mobile) {
+		height: 200px;
+        width: 200px;
+	}
     min-width:10rem;
     min-height:10rem;
+    transition: all .3s;
 }
 
-p {
+#artist, #songName {
     color:white;
+    font-size: 1.5rem;
 }
