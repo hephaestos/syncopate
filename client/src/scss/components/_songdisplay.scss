@@ -8,8 +8,8 @@
 #albumArt {
     border-radius: 0;
     @include breakpoint(desktop) {
-		height: 500px;
-        width: 500px;
+		height: 550px;
+        width: 550px;
 	}
     @include breakpoint(laptop) {
 		height: 400px;
