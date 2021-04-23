@@ -5,32 +5,32 @@
  */
 import io from 'socket.io-client';
 
-/* The ID of the session joined by the user */
+/** The ID of the session joined by the user */
 let sessionID;
-/* An array of users in the current session */
+/** An array of users in the current session */
 let users;
-/* The socket connection to the backend server */
+/** The socket connection to the backend server */
 const socket = io.connect('http://localhost:4000');
 
 export default {
     /**
-     * @summary getter for sessionID
-     * @returns the sessionID
+     * @summary Getter for sessionID
+     * @returns The sessionID
      */
     getSessionId() {
         return sessionID;
     },
 
     /**
-     * @summary getter for users
-     * @returns an array of users in the current session
+     * @summary Getter for users
+     * @returns An array of users in the current session
      */
     getUsers() {
         return users;
     },
 
     /**
-     * @summary creates a new session and stores the returned session ID
+     * @summary Creates a new session and stores the returned session ID
      */
     createSession() {
         socket.emit('create session');
@@ -40,7 +40,7 @@ export default {
     },
 
     /**
-     * @summary creates a new session and stores the returned session ID
+     * @summary Creates a new session and stores the returned session ID
      * @param code - The room code of the session to join
      */
     joinSession(code) {
@@ -52,7 +52,7 @@ export default {
     },
 
     /**
-     * @summary gets the spotify id of the current user
+     * @summary Gets the spotify id of the current user
      * @param access_token - The access token for the Spotify API
      * @param callback - A callback function to handle the resulting data
      */
