@@ -283,7 +283,7 @@ io.on('connection', async (socket) => {
                     // Grab spotify ID
                     const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
                     // Add user to session
-                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID: spotUsername } } });
+                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID, spotUsername } } });
                     socket.join(sessionName); // Add user's socket to room
 
                     // Grab current users in session
