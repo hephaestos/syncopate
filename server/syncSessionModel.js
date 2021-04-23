@@ -1,7 +1,13 @@
 /**
- * This is the model to be used for storing Syncopate user sessions. Each session ID
+ * @classdesc This is the model to be used for storing Syncopate user sessions. Each session ID
  * will be uniquely generated and checked against the current database. Song and playback
  * status is tracked and can be changed, as well as the current list of users in the session.
+ * @class SyncSessionModel is the model for the backend which holds the list of users,
+ * owner of the session, current song playing, and status of playback
+ * @argument uid The ID of the user who owns the session
+ * @argument spotName The Spotify username of the user who owns the session
+ * @constructor Creates new session with currSong as null and adds session owner
+ * to list of users, and sets their ID as the session's owner ID
  */
 class SyncSessionModel {
     constructor(uid, spotName) {
@@ -57,4 +63,4 @@ function uniqueID() {
     return `${chr4()}`;
 }
 
-export { SyncSessionModel, uniqueID };
+export { SyncSessionModel, uniqueID }; // Export model and ID generator
