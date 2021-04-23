@@ -173,7 +173,7 @@ app.get('/refresh_token', (req, res) => {
  * group of users in a room.
  * @param socket Socket connection from client side
  */
-io.on('connection', async (socket) => {
+const connection = async (socket) => {
     try {
         const newUserID = socket.id; // User ID is set as the unique socket ID
 
@@ -198,7 +198,7 @@ io.on('connection', async (socket) => {
      * @emit Sends unique session ID back to user who created session
      * @emit Sends error back to client if user already has a session under their ID
      */
-    socket.on('create session', async () => {
+    const createSession = async () => {
         let sessionID = uniqueID(); // Uniquely generated session ID
         const query = await db.collection('sessions').findOne({ _id: sessionID }); // See if session ID exists in DB
 
@@ -236,14 +236,16 @@ io.on('connection', async (socket) => {
             io.to(sessionID).emit('create session', sessionID); // Send back session name to user
         }
         socket.join(sessionID); // Add this user/socket to a room with their session ID
-    });
+    };
+    socket.on('create session', createSession);
 
     /**
      * @description Method which is called automatically when the user disconnects from a session
      * (i.e. they close out of their browser or by other means). Removes socket/user from their
      * current session automatically. If the session is empty, deletes the session from the DB.
+     * @param reason The reason for causing the client to disconnect.
      */
-    socket.on('disconnect', async (reason) => {
+    const disconnect = async (reason) => {
         const disID = socket.id;
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: disID }); // Grab Promise of user from DB, if they exist
@@ -268,7 +270,8 @@ io.on('connection', async (socket) => {
             console.log('Failed to find user with this ID');
         }
         console.log(`User ${disID} disconnected with reason: ${reason}`); // Disconnect reasoning logged
-    });
+    };
+    socket.on('disconnect', disconnect); // Caller for disconnecting
 
     /**
      * @description Method for users to be able to join other, existing sessions.
@@ -278,7 +281,7 @@ io.on('connection', async (socket) => {
      * to everyone in that room
      * @param sessionName The session ID/name which is being joined by the client
      */
-    socket.on('join session', async (sessionName) => {
+    const joinSession = async (sessionName) => {
         const currID = socket.id;
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: currID }); // Make sure user exists
@@ -313,14 +316,15 @@ io.on('connection', async (socket) => {
         } catch (e) {
             console.log(`User does not exist: ${e}`);
         }
-    });
+    };
+    socket.on('join session', joinSession); // Caller for joining session
 
     /**
      * @description Sends request to Spotify API to authenticate client. Then, sends
      * the client's Spotify username back to the client, which is later used in the DB
      * @emit Sends client's Spotify username back to client upon success
      */
-    socket.on('get spotify id', async (access_token) => {
+    const getSpotifyID = async (access_token) => {
         const options = {
             url: 'https://api.spotify.com/v1/me',
             headers: { Authorization: `Bearer ${access_token}` },
@@ -341,8 +345,10 @@ io.on('connection', async (socket) => {
             // Update client's spotifyID field in databse with their username
             db.collection('UIDs').updateOne({ _id: socket.id }, { $set: { spotifyID: body.id } });
         });
-    });
-});
+    };
+    socket.on('get spotify id', getSpotifyID); // Caller for getting Spotify ID
+};
+io.on('connection', connection);
 
 // Start the server and begin listening on port 4000. Will need to be setup with Syncopate
 // website for production
