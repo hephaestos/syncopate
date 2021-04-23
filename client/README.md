@@ -19,7 +19,19 @@ You can build the project with
 For production build, use
 `yarn build:prod`
 
-## Documentation
+## Documentation and Testing
+
+### Docs
 You can generate docs from the comments with
 `yarn docs`
 This will generate a site in /docs with the availble documentation
+
+### Lint
+A report of all linting errors and warnings can be generated with
+`yarn lint`
+The output will be an html file called eslint_report.html
+
+### Test
+The test suite can be run with
+`yarn test`
+Coverage report will be outputted to /coverage

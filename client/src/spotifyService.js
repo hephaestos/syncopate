@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import sessionService from './sessionService';
 
 let access_token;

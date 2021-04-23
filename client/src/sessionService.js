@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import io from 'socket.io-client';
 
 let sessionID;
