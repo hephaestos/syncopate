@@ -11,18 +11,19 @@ class UserDisplay extends Component {
         super(props);
         this.state = {
             isAuth: spotifyService.isAuth(),
+            id: spotifyService.getId(),
         };
     }
 
     render() {
-        const { isAuth } = this.state;
+        const { isAuth, id } = this.state;
         if (isAuth) {
             return (
                 <div className="header2">
                     <div className="container-header2">
                         <img src="..\images\spotify_icon.png" alt="spotify" />
                         <h1>User:</h1>
-                        <h2>example</h2>
+                        <h2>{id}</h2>
                     </div>
                 </div>
             );

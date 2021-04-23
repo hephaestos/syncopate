@@ -4,10 +4,10 @@
  * status is tracked and can be changed, as well as the current list of users in the session.
  */
 class SyncSessionModel {
-    constructor(uid) {
+    constructor(uid, spotName) {
         this.uid = uid; // Holds userID
         this.users = []; // List of users in this Syncopate session
-        this.users.push(uid); // Add user who created session to session
+        this.users.push({ userID: uid, spotName }); // Add user who created session to session
         this.currSong = null; // Current song playing
         this.isPlaying = false; // Playback status
     }

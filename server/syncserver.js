@@ -24,8 +24,6 @@ import {
 
 import { SyncSessionModel, uniqueID } from './syncSessionModel.js'; // Model for Syncopate sessions and generating IDs
 
-const connectedUsers = new Map(); // Map holds { socket.id : express session ID}
-
 // Constructing express server using sockets.io
 const app = express();
 const server = http.createServer(app);
@@ -38,6 +36,8 @@ const io = new socketio.Server(server, {
         origin: frontend_uri,
         methods: ['GET', 'POST'],
     },
+    pingTimeout: 60000,
+    pingInterval: 25000,
 });
 
 // Connect our databse backend to the server
@@ -61,7 +61,7 @@ app.use(session({
     store: new MongoStore({
         mongoUrl: URL,
         dbName: 'Syncopate',
-        collectionName: 'UIDs', // Where user IDs will be stored
+        collectionName: 'express', // Where user IDs will be stored
         autoRemove: 'native', // Default value for auto remove
         mongooseConnection: db,
     }),
@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
     // your application requests authorization
-    const scope = 'user-read-private user-read-email';
+    const scope = 'user-read-private user-read-email streaming user-read-playback-state user-modify-playback-state user-library-read user-library-modify';
     res.redirect(`https://accounts.spotify.com/authorize?${
         querystring.stringify({
             response_type: 'code',
@@ -172,13 +172,16 @@ app.get('/refresh_token', (req, res) => {
 io.on('connection', async (socket) => {
     try {
         // Grab the unique user ID from the socket header being sent to the server
-        const newUserID = socket.request.headers.cookie.split('; ')[1].replace('syncopate.sid=s%3A', '').split('.')[0];
-        console.log(newUserID);
-        connectedUsers.set(socket.id, newUserID); // Add user ID to map with their socket ID
+        const newUserID = socket.id;
         // Find user in database and make sure current session is set to null until they join a room
         await db
             .collection('UIDs')
-            .updateOne({ _id: connectedUsers.get(socket.id) }, { $set: { currSession: null } });
+            .insertOne({
+                _id: newUserID,
+                spotifyID: null,
+                created: new Date(),
+                currSession: null,
+            });
         console.log(`Connected user: ${newUserID}`);
     } catch (e) {
         console.log(`Caught an error: ${e}`);
@@ -201,14 +204,17 @@ io.on('connection', async (socket) => {
         // If we did not generate a unique ID, generate another. TODO: **Replace this method**
         if (query != null) sessionID = uniqueID();
 
-        const userID = connectedUsers.get(socket.id); // Grab userID from global map
-        // Create new Syncopate session model for this user
-        const userSession = new SyncSessionModel(userID); // Create new session model for this user
+        const userID = socket.id; // Grab userID from global map
+        const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
+        // Create new session model for this user
+        const userSession = new SyncSessionModel(userID, spotUsername);
         const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
 
         // Make sure user has not already started hostng a session. If so, send an error message
         if (userSessionExists != null) {
             console.log('User cannot posses more than one session');
+            // Error message sent to user if they already have session
+            io.to(sessionID).emit('create session', 'Error: User already created session');
         // Otherwise, create a session on the backend
         } else {
             db.collection('sessions').insertOne({
@@ -223,9 +229,10 @@ io.on('connection', async (socket) => {
             // Change user's current session to newly created session ID
             await db
                 .collection('UIDs')
-                .updateOne({ _id: connectedUsers.get(socket.id) },
+                .updateOne({ _id: socket.id },
                     { $set: { currSession: sessionID } });
             console.log(`Session created with sessionID: ${sessionID}`);
+            io.to(sessionID).emit('create session', sessionID); // Send back session name to user
         }
         socket.join(sessionID); // Add this user/socket to a room with their session ID
     });
@@ -235,8 +242,8 @@ io.on('connection', async (socket) => {
      * (i.e. they close out of their browser or by other means). Removes socket/user from their
      * current session automatically. If the session is empty, deletes the session from the DB.
      */
-    socket.on('disconnect', async () => {
-        const disID = connectedUsers.get(socket.id); // The actual randomly generated userID
+    socket.on('disconnect', async (reason) => {
+        const disID = socket.id; // The actual randomly generated userID
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: disID }); // Grab Promise of user from DB, if they exist
             const currSess = currUser.currSession; // Current session user is in
@@ -244,7 +251,7 @@ io.on('connection', async (socket) => {
                 let userInSess = await db.collection('sessions').findOne({ _id: currSess }); // See if session user is in exists
                 if (userInSess) { // If user is in actual session
                     // Remove user from their current session
-                    await db.collection('sessions').updateOne({ _id: currSess }, { $pull: { 'userSession.users': disID } });
+                    await db.collection('sessions').updateOne({ _id: currSess }, { $pull: { 'userSession.users': { userID: disID } } });
                     userInSess = await db.collection('sessions').findOne({ _id: currSess }); // Refresh user list
                     socket.leave(currSess); // Remove user from socket room
                     // If session is empty when user leaves, delete it
@@ -257,8 +264,7 @@ io.on('connection', async (socket) => {
         } catch (e) {
             console.log('Failed to find user with this ID');
         }
-        connectedUsers.delete(socket.id);
-        console.log(`User ${disID} disconnected`);
+        console.log(`User ${disID} disconnected with reason: ${reason}`);
     });
 
     /**
@@ -266,7 +272,7 @@ io.on('connection', async (socket) => {
      * the session exists, and if it does, add user's socket to room and adds them to room's DB
      */
     socket.on('join session', async (sessionName) => {
-        const currID = connectedUsers.get(socket.id);
+        const currID = socket.id;
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: currID }); // Make sure user exists
             if (currUser) {
@@ -275,13 +281,48 @@ io.on('connection', async (socket) => {
                 if (reqSession) {
                     // If user exists, change their current session to the one they are joining
                     await db.collection('UIDs').updateOne({ _id: currID }, { $set: { currSession: sessionName } });
-                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': currID } });
+                    // Grab spotify ID
+                    const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
+                    // Add user to session
+                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID, spotUsername } } });
                     socket.join(sessionName); // Add user's socket to room
+
+                    // Grab current users in session
+                    let usersInSession = await db.collection('sessions').findOne({ _id: sessionName });
+                    usersInSession = usersInSession.userSession.users; // Grab user objects in array
+                    const users = [];
+                    // For each user, append their username to array
+                    usersInSession.array.forEach((element) => {
+                        users.push(element.spotName);
+                    });
+                    // Send usernames back to clients in room user joined
+                    io.to(sessionName).emit('join session', users);
                 }
             }
         } catch (e) {
             console.log(`User does not exist: ${e}`);
         }
+    });
+
+    socket.on('get spotify id', async (access_token) => {
+        const options = {
+            url: 'https://api.spotify.com/v1/me',
+            headers: { Authorization: `Bearer ${access_token}` },
+            json: true,
+        };
+
+        // use the access token to access the Spotify Web API
+        request.get(options, (err, res, body) => {
+            console.log('err');
+            console.log(err);
+            console.log('res');
+            console.log(res);
+            console.log('body');
+            console.log(body);
+
+            io.to(socket.id).emit('get spotify id', body);
+            db.collection('UIDs').updateOne({ _id: socket.id }, { $set: { spotifyID: body.id } });
+        });
     });
 });
 

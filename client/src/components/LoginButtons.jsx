@@ -1,6 +1,8 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import io from 'socket.io-client';
+import { Link } from 'react-router-dom';
 import spotifyService from '../spotifyService';
+import sessionService from '../sessionService';
 import SpotifyAuth from './SpotifyAuth';
 import Form from './Form';
 /**
@@ -16,8 +18,8 @@ class LoginButtons extends Component {
             isAuth: spotifyService.isAuth(),
             show: false,
         };
+        this.createSession = this.createSession.bind(this);
         this.toggleForm = this.toggleForm.bind(this);
-        this.socket = io.connect('http://localhost:4000');
     }
 
     componentDidMount() {
@@ -27,8 +29,7 @@ class LoginButtons extends Component {
                 isAuth: spotifyService.isAuth(),
             }));
         }
-        console.log(spotifyService.access_token);
-        console.log(spotifyService.refresh_token);
+        console.log(spotifyService.getAccessToken());
     }
 
     toggleForm() {
@@ -37,8 +38,7 @@ class LoginButtons extends Component {
     }
 
     createSession() {
-        console.log(this);
-        this.socket.emit('create session');
+        sessionService.createSession();
     }
 
     render() {
@@ -46,7 +46,7 @@ class LoginButtons extends Component {
         if (isAuth) {
             return (
                 <div className="LoginButtons">
-                    <button type="button" onClick={this.createSession} className="btn btn-outline-success btn-lg">Create Session</button>
+                    <Link to="/session"><button type="button" onClick={this.createSession} className="btn btn-outline-success btn-lg">Create Session</button></Link>
                     <button type="button" onClick={this.toggleForm} className="btn btn-outline-success btn-lg">Join Session</button>
                     {show && <Form />}
                 </div>
