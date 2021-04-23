@@ -4,4 +4,4 @@ dist
 secrets.js
 docs
 coverage
-eslint_report.html
+lint

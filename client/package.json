@@ -50,6 +50,6 @@
     "build:prod": "webpack --mode production",
     "docs": "jsdoc -d docs -r src/",
     "test": "jest --coverage",
-    "lint": "eslint -o eslint_report.html -f html"
+    "lint": "eslint src/**/*.js src/**/*.jsx -o ./lint/report.html -f html"
   }
 }

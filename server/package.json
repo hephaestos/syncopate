@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node syncserver.js",
-    "docs": "jsdoc -d docs syncserver.js"
+    "docs": "jsdoc -d docs syncserver.js",
+    "lint": "eslint *.js -o ./lint/report.html -f html"
   },
   "author": "",
   "license": "ISC",
