@@ -250,7 +250,7 @@ io.on('connection', async (socket) => {
                 let userInSess = await db.collection('sessions').findOne({ _id: currSess }); // See if session user is in exists
                 if (userInSess) { // If user is in actual session
                     // Remove user from their current session
-                    await db.collection('sessions').updateOne({ _id: currSess }, { $pull: { 'userSession.users': disID } });
+                    await db.collection('sessions').updateOne({ _id: currSess }, { $pull: { 'userSession.users': { userID: disID } } });
                     userInSess = await db.collection('sessions').findOne({ _id: currSess }); // Refresh user list
                     socket.leave(currSess); // Remove user from socket room
                     // If session is empty when user leaves, delete it
