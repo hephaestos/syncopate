@@ -44,7 +44,7 @@ const io = new socketio.Server(server, {
 });
 
 // Connect our databse backend to the server
-mongoose.connect(URL);
+mongoose.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
