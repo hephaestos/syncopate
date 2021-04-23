@@ -29,8 +29,7 @@ class LoginButtons extends Component {
                 isAuth: spotifyService.isAuth(),
             }));
         }
-        console.log(spotifyService.access_token);
-        console.log(spotifyService.refresh_token);
+        console.log(spotifyService.getAccessToken());
     }
 
     toggleForm() {
