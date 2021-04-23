@@ -241,7 +241,7 @@ io.on('connection', async (socket) => {
      * (i.e. they close out of their browser or by other means). Removes socket/user from their
      * current session automatically. If the session is empty, deletes the session from the DB.
      */
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', async (reason) => {
         const disID = socket.id; // The actual randomly generated userID
         try {
             const currUser = await db.collection('UIDs').findOne({ _id: disID }); // Grab Promise of user from DB, if they exist
@@ -263,7 +263,7 @@ io.on('connection', async (socket) => {
         } catch (e) {
             console.log('Failed to find user with this ID');
         }
-        console.log(`User ${disID} disconnected`);
+        console.log(`User ${disID} disconnected with reason: ${reason}`);
     });
 
     /**
@@ -283,7 +283,7 @@ io.on('connection', async (socket) => {
                     // Grab spotify ID
                     const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID;
                     // Add user to session
-                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID: spotUsername } } });
+                    await db.collection('sessions').updateOne({ _id: sessionName }, { $push: { 'userSession.users': { currID, spotUsername } } });
                     socket.join(sessionName); // Add user's socket to room
 
                     // Grab current users in session
