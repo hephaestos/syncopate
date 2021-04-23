@@ -312,6 +312,11 @@ io.on('connection', async (socket) => {
 
         // use the access token to access the Spotify Web API
         request.get(options, (err, res, body) => {
+            console.log('err');
+            console.log(err);
+            console.log('res');
+            console.log(res);
+            console.log('body');
             console.log(body);
 
             io.to(socket.id).emit('get spotify id', body);
