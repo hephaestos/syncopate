@@ -23,7 +23,6 @@ import {
 } from './secrets.js'; // Server/backend secrets for server consturctor
 
 import { SyncSessionModel, uniqueID } from './syncSessionModel.js'; // Model for Syncopate sessions and generating IDs
-import { constants } from 'buffer';
 
 // Constructing express server using sockets.io
 const app = express();
@@ -37,6 +36,8 @@ const io = new socketio.Server(server, {
         origin: frontend_uri,
         methods: ['GET', 'POST'],
     },
+    pingTimeout: 60000,
+    pingInterval: 25000,
 });
 
 // Connect our databse backend to the server
