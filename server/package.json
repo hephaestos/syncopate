@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node syncserver.js",
     "docs": "jsdoc -d docs syncserver.js syncSessionModel.js",
-    "test": "jest --coverage"
     "lint": "eslint *.js -o ./lint/report.html -f html"
   },
   "author": "",
