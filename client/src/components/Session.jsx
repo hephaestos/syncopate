@@ -17,9 +17,6 @@ function Session() {
         <div className="Session">
             <div className="container-fluid fill">
                 <div className="row">
-                    {/* <div className="col"><Navbar /></div> */}
-                </div>
-                <div className="row">
                     <div className="col col-1 d-none d-md-block"><Userbar /></div>
                     <div className="col col-xs-9">
                         <SpotifyPlayer
