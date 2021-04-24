@@ -1,6 +1,3 @@
-/* eslint-disable import/extensions */
-/* eslint-disable no-console */
-/* eslint-disable camelcase */
 /**
  * @author Brandon T, Taylor R., Remy M., Jacob J., Daniel F.
  * @version 0.0.1

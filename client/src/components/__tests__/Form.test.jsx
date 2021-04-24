@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Searchbar from '../Searchbar';
+import Form from '../Form';
 
 it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Searchbar />, div);
+    ReactDOM.render(<Form />, div);
 });

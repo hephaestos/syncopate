@@ -47,8 +47,9 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack --mode development",
-    "docs": "jsdoc -d docs -r src/",
     "build:prod": "webpack --mode production",
-    "test": "jest --coverage"
+    "docs": "jsdoc -d docs -r src/",
+    "test": "jest --coverage",
+    "lint": "eslint src/**/*.js src/**/*.jsx -o ./lint/report.html -f html"
   }
 }
