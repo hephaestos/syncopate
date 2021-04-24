@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node syncserver.js",
-    "docs": "jsdoc -d docs syncserver.js",
+    "docs": "jsdoc -d docs syncserver.js syncSessionModel.js",
+    "test": "jest --coverage"
     "lint": "eslint *.js -o ./lint/report.html -f html"
   },
   "author": "",
@@ -16,17 +17,19 @@
     "connect-mongodb-session": "^2.4.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "expect": "^26.6.2",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jshashes": "^1.0.8",
+    "mongodb": "^3.6.6",
     "mongoose": "^5.12.2",
     "querystring": "^0.2.1",
     "request": "^2.88.2",
     "save": "^2.4.0",
     "socket.io": "^4.0.1",
     "socket.io-adapter-mongo": "^2.0.5",
-    "swagger-jsdoc": "^7.0.0-rc.6",
-    "swagger-ui-express": "^4.1.6",
+    "socket.io-client": "^4.0.1",
+    "ts-jest": "^26.5.5",
     "uuid": "^8.3.2",
     "xmlhttprequest": "^1.8.0"
   },
@@ -34,6 +37,8 @@
     "eslint": "^7.22.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.5",
+    "jest": "^26.6.3",
     "jsdoc": "^3.6.6"
   }
 }

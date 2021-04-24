@@ -174,7 +174,8 @@ const connection = async (socket) => {
     try {
         const newUserID = socket.id; // User ID is set as the unique socket ID
 
-        // Find user in database and make sure current session is set to null until they join a room
+        // Find user in database and make sure
+        // current session is set to null until they join a room
         await db
             .collection('UIDs')
             .insertOne({
@@ -205,7 +206,8 @@ const connection = async (socket) => {
         const userID = socket.id; // User ID is socket ID
         const spotUsername = await db.collection('UIDs').findOne({ id: socket.id }).spotifyID; // Grab Spotify ID
 
-        // Create new session model for this user, initialize session owner, and add them to users
+        // Create new session model for this user,
+        // initialize session owner, and add them to users
         const userSession = new SyncSessionModel(userID, spotUsername);
         const userSessionExists = await db.collection('sessions').findOne({ 'userSession.uid': userID });
 
@@ -214,7 +216,7 @@ const connection = async (socket) => {
             console.log('User cannot posses more than one session');
             // Error message sent to user if they already have session
             io.to(sessionID).emit('create session', 'Error: User already created session');
-        // Otherwise, create a session on the backend
+            // Otherwise, create a session on the backend
         } else {
             db.collection('sessions').insertOne({
                 _id: sessionID,
@@ -286,7 +288,8 @@ const connection = async (socket) => {
             if (currUser) {
                 const reqSession = await db.collection('sessions').findOne({ _id: sessionName });
 
-                // If session user is looking for exists, add them to the session's list of users
+                // If session user is looking for exists,
+                // Grab user objects in array
                 if (reqSession) {
                     // If user exists, change their current session to the one they are joining
                     await db.collection('UIDs').updateOne({ _id: currID }, { $set: { currSession: sessionName } });
@@ -298,7 +301,8 @@ const connection = async (socket) => {
 
                     // Grab current users in session
                     let usersInSession = await db.collection('sessions').findOne({ _id: sessionName });
-                    usersInSession = usersInSession.userSession.users; // Grab user objects in array
+                    // Grab user objects in array
+                    usersInSession = usersInSession.userSession.users;
                     const users = [];
 
                     // For each user, append their username to array
@@ -352,3 +356,5 @@ io.on('connection', connection);
 server.listen(4000, () => {
     console.log('Listening');
 });
+
+export { connection as default };
