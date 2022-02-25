@@ -4,4 +4,5 @@ dist
 secrets.js
 docs
 coverage
+reports
 lint
