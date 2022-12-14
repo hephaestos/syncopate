@@ -17,7 +17,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "expect": "^26.6.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "jshashes": "^1.0.8",
     "mongodb": "^3.6.6",
